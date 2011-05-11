@@ -1,0 +1,123 @@
+<div class="online_list">
+    <div class="list_header">
+        <div class="online_list_title">当前分类</div>
+    </div>
+    <div class="list_content">
+        <ul>
+        <% 
+        it.categories = it.categories || [];
+        for(var i = 0, len = it.categories.length; i < len; i++) { 
+            var category = it.categories[i];
+        %>
+            <li>
+                <p>
+                <% if(category.parent_id) { %>
+                |--
+                <% } %>
+                <a title="<%= category.name %>" <% if(!category.show) { %>style="text-decoration: line-through;"<% } %> href="/category/<%- category.id %>"><%= category.name %></a>
+                [
+                <a href="javascript:edit_category('<%- category.id %>');">编辑</a>
+                <% if(category.can_delete) { %>
+                |
+                <a href="javascript:delete_category('<%- category.id %>', '<%= category.name %>');">删除</a>
+                <% } %>
+                |
+                <a href="javascript:toggle_category('<%- category.id %>');"><%- category.show ? "隐藏" : "显示" %></a>
+                ]
+                <span><%- category.question_count %>问题</span>
+                </p>
+            </li>
+        <% } %>
+        </ul>
+    </div>
+</div>
+
+<div class="online_list">
+    <div class="list_header">
+        <div class="online_list_title">编辑分类</div>
+    </div>
+    <div class="content">
+        <form id="category_form" class="simple_form">
+            <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
+            <input type="hidden" id="category_id" value="" />
+            <p>
+                <label for="category_parent_id">父分类</label>
+                <select id="category_parent_id">
+                    <option selected="selected" value="">不选择</option>
+                    <% for(var i = 0, len = it.categories.length; i < len; i++) { 
+                        var category = it.categories[i];
+                        if(!category.parent_id) {
+                    %>
+                    <option value="<%- category.id %>"><%= category.name %></option>
+                    <% }
+                    } %>
+                </select>
+            </p>
+            <p>
+                <label for="category_name">分类名称</label>
+                <input id="category_name" name="name" type="text" class="long" value="" />
+            </p>
+            <p>
+                <button type="button" id="btn_submit_category" class="minibutton blue submit">保存</button>
+            </p>
+        </form>
+    </div>
+</div>
+<script>
+
+function edit_category(id) {
+	$.getJSON('/category/' + id + '/json', function(result) {
+		if(!result.success) {
+			alert(result.error);
+			return;
+		}
+		var category = result.data;
+		if(category) {
+			$('#category_id').val(category._id || '');
+	        $('#category_parent_id').val(category.parent_id || '');
+	        $('#category_name').val(category.name);
+		} else {
+			alert('分类不存在');
+		}
+	});
+};
+
+function delete_category(id, name) {
+	if(!window.confirm('确定要删除分类 "' + name + '" 吗？')) {
+		return;
+	}
+    $.post('/category/delete', {id: id}, function(result) {
+        if(!result.success) {
+            alert(result.error);
+            return;
+        }
+        window.location = window.location;
+    }, 'json');
+};
+
+function toggle_category(id) {
+	$.post('/category/toggle', {id: id}, function(result) {
+        if(!result.success) {
+            alert(result.error);
+            return;
+        }
+        window.location = window.location;
+    }, 'json');
+};
+
+$(document).ready(function() {
+	$('#btn_submit_category').click(function() {
+		var data = {csrf: $('#csrf').val()};
+		data.id = $('#category_id').val();
+		data.parent_id = $('#category_parent_id').val();
+		data.name = $('#category_name').val();
+		$.post('/category/save', data, function(result){
+			if(result.success) {
+				window.location = window.location;
+			} else {
+				alert(result.error);
+			}
+	    }, 'json');
+	});
+});
+</script>

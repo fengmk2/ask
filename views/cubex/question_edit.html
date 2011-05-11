@@ -1,0 +1,51 @@
+<%
+    var action = '/question';
+    if(!it.question.isNew) {
+        action = '/question/' + it.question.id;
+    }
+%>
+
+<div class="online_list">
+    <div class="list_header">
+        <div class="online_list_title">我要提问</div>
+    </div>
+    <div class="content">
+	    <form id="question_form" class="simple_form" method="post" action="<%= action %>">
+		    <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
+            <p><label for="question_title">一句话描述你的问题</label>
+            <input id="question_title" name="title" type="text" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= it.question.title || '' %>" /></p>
+            <p><label for="question_content">可选: 更多问题描述</label>
+            <textarea id="question_content" name="content" rows="10" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= it.question.content || '' %></textarea></p>
+            <p><button type="submit" id="btn_submit_question" class="minibutton blue submit">提交问题</button>
+                <% if(!it.question.isNew) { %>
+                <button type="button" id="btn_delete_question" class="minibutton red submit">删除问题</button>
+                <% } %></p>
+		</form>
+    </div>
+</div>
+
+<script type="text/javascript"> 
+$(document).ready(function(){
+    $("textarea").qeditor();
+    
+    var $tips = $('#question_form input[tip], #question_form textarea[tip]').tooltip();
+    
+    $('#btn_delete_question').click(function() {
+        if(!window.confirm('真的要删除此问题吗？')) return;
+        var url = window.location.pathname.replace('/edit', '/delete');
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: {},
+          success: function(result) {
+              if(result.success) {
+                  window.location = '/question?my=1';
+              } else {
+                  alert(result.error);
+              }
+          },
+          dataType: 'json'
+        });     
+    });
+});
+</script>

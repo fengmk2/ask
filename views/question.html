@@ -1,0 +1,24 @@
+<h3><a href="/question/<%- it.question.id %>"><%= it.question.title %></a></h3>
+<% if(it.current_user && it.current_user._id == it.question.author_id) { %>
+<p><a href="/question/<%- it.question.id %>/edit">编辑</a></p>
+<% } %>
+<div><%- it.question.content %></div>
+
+<h3>我来回答</h3>
+<form id="question_form" class="simple_form" method="post" action="/question/<%- it.question.id %>/answer">
+    <ul>
+        <li>
+            <textarea id="answer_content" name="content" class="long"></textarea>
+        </li>
+        <li><button type="submit" id="btn_submit_question" class="minibutton blue submit">提交回答</button>
+        </li>
+    </ul>
+    <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
+</form>
+
+<script type="text/javascript" src="/js/jquery.qeditor.js"></script> 
+<script type="text/javascript"> 
+$(document).ready(function(){
+    $("textarea").qeditor();
+});
+</script> 

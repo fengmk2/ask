@@ -1,0 +1,11 @@
+
+<h2>最新问题</h2>
+<ul>
+<% it.questions = it.questions || [];
+for(var i = 0, len = it.questions.length; i < len; i++) { 
+    var question = it.questions[i];
+%>
+  <li><% if(question.author) {%><%= question.author.name %> : <% } %><a href="/question/<%- question.id %>"><%= question.title %></a></li>
+<% } %>
+</ul>
+

@@ -1,0 +1,17 @@
+<ul>
+<% 
+it.questions = it.questions || [];
+for(var i = 0, len = it.questions.length; i < len; i++) { 
+    var question = it.questions[i];
+%>
+    <li>
+        <p>
+        <% if(it.current_user && it.current_user._id == question.author_id) { %>
+        [<a href="/question/<%- question.id %>/edit">编辑</a>]
+        <% } %>
+        <a title="<%= question.title%>" href="/question/<%- question.id %>"><%=: question.title | fixed_string:50 %></a>
+        <span><%- question.answer_count %>问答</span>
+        </p>
+    </li>
+<% } %>
+</ul>

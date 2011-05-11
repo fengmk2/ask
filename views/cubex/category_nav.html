@@ -1,0 +1,18 @@
+<% 
+ it.categories = it.categories || [];
+ for(var i = 0, len = it.categories.length; i < len; i++) { 
+     var category = it.categories[i];
+%>
+<div>
+    <a href="/category/<%- category.id %>" class="info_title"><%= category.name %><span>(<%- category.question_count%>)</span></a>
+    <ul>
+    <% for(var j = 0, l = category.children.length; j < l; j++) { 
+        var child = category.children[j];
+    %>
+        <li>
+            <a href="/category/<%- child.id %>"><%= child.name %><span>(<%- child.question_count%>)</span></a>
+        </li>
+    <% } %> 
+    </ul>
+</div>
+<% } %>
