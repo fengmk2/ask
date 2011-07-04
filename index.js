@@ -11,8 +11,17 @@ var express = require('express')
   , config = require('./config')
   , models = require('./models');
 
-var app = express.createServer();
-
+var app = module.exports = express.createServer();
+app.dynamicHelpers({
+  base: function(){
+    // return the app's mount-point
+    // so that urls can adjust. For example
+    // if you run this example /post/add works
+    // however if you run the mounting example
+    // it adjusts to /blog/post/add
+    return '/' == app.route ? '' : app.route;
+  }
+});
 /**
  * Views settings
  */
@@ -89,6 +98,8 @@ app.get('/api/sync_user', user_control.sync_user);
 app.post('/api/sync_user', user_control.sync_user);
 
 
-app.listen(config.port);
-console.log('http://localhost:' + config.port);
-console.log((process.env.NODE_ENV || 'development') + ' env');
+if (!module.parent) {
+	app.listen(config.port);
+	console.log('Express started on port ' + config.port);
+	console.log((process.env.NODE_ENV || 'development') + ' env');
+}

@@ -11,12 +11,12 @@
         <div class="online_list_title">我要提问</div>
     </div>
     <div class="content">
-	    <form id="question_form" class="simple_form" method="post" action="<%= action %>">
+	    <form id="question_form" class="simple_form" method="post" action="<%- it.base %><%- action %>">
 		    <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
             <p><label for="question_title">一句话描述你的问题</label>
             <input id="question_title" name="title" type="text" reg="[^\s]+" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= it.question.title || '' %>" /></p>
             <p>
-            <button type="button" href="/category/select" title="选择分类" id="btn_select_category">设置分类</button>
+            <button type="button" href="<%- it.base %>/category/select" title="选择分类" id="btn_select_category">设置分类</button>
             <input type="hidden" id="question_category_id" name="category_id" value="<%- it.question.category_id || '' %>" />
             <span id="question_category_name"><%= it.question.category ? it.question.category.name : '' %></span>
             </p>
@@ -52,7 +52,7 @@ $(document).ready(function(){
           data: {},
           success: function(result) {
               if(result.success) {
-                  window.location = '/question?my=1';
+                  window.location = SITE_CONFIG.base + '/question?my=1';
               } else {
                   alert(result.error);
               }

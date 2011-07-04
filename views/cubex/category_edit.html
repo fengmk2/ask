@@ -46,7 +46,7 @@
                 <% if(category.parent_id) { %>
                 |--
                 <% } %>
-                <a title="<%= category.name %>" <% if(!category.show) { %>style="text-decoration: line-through;"<% } %> href="/category/<%- category.id %>"><%= category.name %></a>
+                <a title="<%= category.name %>" <% if(!category.show) { %>style="text-decoration: line-through;"<% } %> href="<%- it.base %>/category/<%- category.id %>"><%= category.name %></a>
                 [
                 <a href="javascript:edit_category('<%- category.id %>');">编辑</a>
                 <% if(category.can_delete) { %>
@@ -67,7 +67,7 @@
 <script>
 
 function edit_category(id) {
-	$.getJSON('/category/' + id + '/json', function(result) {
+	$.getJSON(SITE_CONFIG.base + '/category/' + id + '/json', function(result) {
 		if(!result.success) {
 			alert(result.error);
 			return;
@@ -87,7 +87,7 @@ function delete_category(id, name) {
 	if(!window.confirm('确定要删除分类 "' + name + '" 吗？')) {
 		return;
 	}
-    $.post('/category/delete', {id: id}, function(result) {
+    $.post(SITE_CONFIG.base + '/category/delete', {id: id}, function(result) {
         if(!result.success) {
             alert(result.error);
             return;
@@ -97,7 +97,7 @@ function delete_category(id, name) {
 };
 
 function toggle_category(id) {
-	$.post('/category/toggle', {id: id}, function(result) {
+	$.post(SITE_CONFIG.base + '/category/toggle', {id: id}, function(result) {
         if(!result.success) {
             alert(result.error);
             return;
@@ -112,7 +112,7 @@ $(document).ready(function() {
 		data.id = $('#category_id').val();
 		data.parent_id = $('#category_parent_id').val();
 		data.name = $('#category_name').val();
-		$.post('/category/save', data, function(result){
+		$.post(SITE_CONFIG.base + '/category/save', data, function(result){
 			if(result.success) {
 				window.location = window.location;
 			} else {

@@ -3,20 +3,25 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>数据魔方问答</title>
-<link rel="stylesheet" type="text/css" href="/css/tooltip.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="/css/jquery.qeditor.css" media="screen" />
-<link rel="stylesheet" href="/cubex/cubex_ask.css" />
-<script type="text/javascript" src="/js/jquery-1.6.min.js"></script>
-<script type="text/javascript" src="/js/tooltip.js"></script>
-<script type="text/javascript" src="/js/main.js"></script>
+<link rel="stylesheet" type="text/css" href="<%- it.base %>/css/tooltip.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="<%- it.base %>/css/jquery.qeditor.css" media="screen" />
+<link rel="stylesheet" href="<%- it.base %>/cubex/cubex_ask.css" />
+<script type="text/javascript" src="<%- it.base %>/js/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="<%- it.base %>/js/tooltip.js"></script>
+<script type="text/javascript" src="<%- it.base %>/js/main.js"></script>
+<script type="text/javascript">
+var SITE_CONFIG = {
+	base: '<%- it.base %>'
+};
+</script>
 </head>
 
 <body>
 	<div id="header">
     	<div id="head">
-        	<a href="/" title="数据魔方问答"><span class="logo_ask"></span></a>
+        	<a href="<%- it.base %>/" title="数据魔方问答"><span class="logo_ask"></span></a>
             <div class="search">
-            	<form name="search_form" action="/question">
+            	<form name="search_form" action="<%- it.base %>/question">
                 	<div class="search_fields">
                 	    <% if(it.is_my_question) { %>
                         <input type="hidden" name="my" value="1" />
@@ -30,7 +35,7 @@
             </div>
             <div class="go_ask">
             	<div class="go_ask_button">
-                	<a href="/question/new"><button>我要提问</button></a>
+                	<a href="<%- it.base %>/question/new"><button>我要提问</button></a>
                 </div>
                 <a  href="#" class="go_ask_help">帮助</a>
             </div>
@@ -49,15 +54,15 @@
         	<% if(it.current_user) { %> 
             	<div class="title">用户</div>
                 <div class="content">
-                    您好，<a href="/my/questions" title="数据魔方"><%= it.current_user.name %></a>
+                    您好，<a href="<%- it.base %>/my/questions" title="数据魔方"><%= it.current_user.name %></a>
                     | 积分 <%= it.current_user.score %>
                     <br />
-                    <a href="/question?my=1">我的问题</a>(<%- it.current_user.question_count %>)
+                    <a href="<%- it.base %>/question?my=1">我的问题</a>(<%- it.current_user.question_count %>)
                     |
-                    <a href="/question?my=1">我的回答</a>(<%- it.current_user.answer_count %>)
+                    <a href="<%- it.base %>/question?my=1">我的回答</a>(<%- it.current_user.answer_count %>)
                     <% if(it.current_user.is_admin) { %>
                     <br />
-                    <a href="/category/edit">编辑分类</a>
+                    <a href="<%- it.base %>/category/edit">编辑分类</a>
                     <% } %>
                 </div>
             <% } else { %>

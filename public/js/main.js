@@ -31,14 +31,14 @@ $(document).ready(function() {
 	
 	if($('.question_info').length > 0) {
 		// 显示分类菜单
-		$.get('/category/list', function(html) {
+		$.get(SITE_CONFIG.base + '/category/list', function(html) {
 			$('.question_info').html(html);
 		});
 	}
 	
 	if($('.hot_user').length > 0) {
 		// 显示积分榜
-		$.get('/user/hot', function(html) {
+		$.get(SITE_CONFIG.base + '/user/hot', function(html) {
 			$('.hot_user .content').html(html);
 		});
 	}

@@ -4,6 +4,9 @@
 ## Install
 
     $ sudo npm install express lingo mongoose
+    $ cd support/
+    $ git clone git://github.com/fengmk2/ejs.git
+    $ git clone git://github.com/fengmk2/express-resource.git
     
 ### mongodb 
     
@@ -14,7 +17,7 @@
 启动脚步
 
     $ $HOME/local/mongodb/bin/mongod --dbpath=$HOME/data/mongodb --fork --logpath=$HOME/data/mongodb.log    
-    
+    $ node server.js
     
 ## Models
 

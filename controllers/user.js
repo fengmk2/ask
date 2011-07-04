@@ -44,7 +44,6 @@ exports.sync_user = function(req, res, next) {
  * 
  */
 exports.user_middleware = function(req, res, next) {
-	//console.log(req.url, req.headers);
 	if(!res._locals) {
         res._locals = {};
     }
@@ -55,9 +54,8 @@ exports.user_middleware = function(req, res, next) {
 	if(res._locals.current_user || !req.cookies[config.auth_cookie_name]) return next();
 	var authuser = req.cookies[config.auth_cookie_name];
 	authuser = utils.strcode(authuser, req.headers['user-agent'], config.session_secret, true).split('\t');
-	var uid = authuser[0];
-	var password = authuser[1];
-	console.log(authuser);
+	var uid = authuser[0]
+	  , password = authuser[1];
 	if(!uid || !password) return next();
 	User.findOne({uid: uid}, function(err, user) {
 		if(err) return next(err);

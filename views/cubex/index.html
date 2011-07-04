@@ -1,7 +1,7 @@
 <div class="online_list">
     <div class="list_header">
         <div class="online_list_title">网友正在问</div>
-        <a href="/question" class="more">更多</a>
+        <a href="<%- it.base %>/question" class="more">更多</a>
     </div>
     <div class="list_content">
         <ul>
@@ -12,7 +12,7 @@
         %>
             <li>
                 <p>
-                <a title="<%= question.title%>" href="/question/<%- question.id %>"><%=: question.title | fixed_string:30 %></a>
+                <a title="<%= question.title%>" href="<%- it.base %>/question/<%- question.id %>"><%=: question.title | fixed_string:30 %></a>
                 <span><%- question.answer_count %>问答</span>
                 </p>
             </li>

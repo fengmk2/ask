@@ -2,7 +2,7 @@
     <div class="list_header">
         <div class="online_list_title">
         <% if(it.category) { %>
-	    <a cid="<%- it.category.id %>" id="category_id" href="/category/<%- it.category.id %>"><%= it.category.name %></a> | 
+	    <a cid="<%- it.category.id %>" id="category_id" href="<%- it.base %>/category/<%- it.category.id %>"><%= it.category.name %></a> | 
 	    <% } %>
         <% if(it.is_my_question) { %>我的问题<% } else { %>网友正在问<% } %></div>
     </div>
@@ -29,7 +29,7 @@ $(document).ready(function() {
 	    if(category_id) {
 	    	data.category_id = category_id;
 	    }
-	    $.get('/question/paging' + search, data, function(html) {
+	    $.get(SITE_CONFIG.base + '/question/paging' + search, data, function(html) {
 	        $('#question_list').html(html);
 	        hide_loading();
 	    });

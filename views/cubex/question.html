@@ -1,12 +1,12 @@
 <div class="online_list">
-    <h2 class="online_list_title"><a href="/question/<%- it.question.id %>"><%= it.question.title %></a></h2>
+    <h2 class="online_list_title"><a href="<%- it.base %>/question/<%- it.question.id %>"><%= it.question.title %></a></h2>
     <p class="info">离问题结束还有 <%- it.question.close_at.timeleft() %> 
     | 提问者：<%= it.question.author.name %> 
     <% if(it.question.category) { %>
-    | 分类：<a href="/category/<%- it.question.category.id %>"><%= it.question.category.name %></a>(<%- it.question.category.question_count %>)
+    | 分类：<a href="<%- it.base %>/category/<%- it.question.category.id %>"><%= it.question.category.name %></a>(<%- it.question.category.question_count %>)
     <% } %>
     <% if(it.question.editable) { %>
-    | <a href="/question/<%- it.question.id %>/edit">编辑</a>
+    | <a href="<%- it.base %>/question/<%- it.question.id %>/edit">编辑</a>
     <% } %>
     <span>浏览次数: <%- it.question.visit_count %></span></p>
     <div class="content"><%- it.question.content %></div>
@@ -58,7 +58,7 @@ $(document).ready(function(){
     	if(!content) {
     		return;
     	}
-    	var url = '/question/' + $('#question_id').val() + '/answer';
+    	var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer';
     	var $btn = $(this);
     	$btn.attr('disabled', true);
     	$.post(url, {content: content}, function(result) {
@@ -80,7 +80,7 @@ $(document).ready(function(){
     	if($editor.length > 0) {
     		$btn.attr('disabled', true);
     		var body = $editor.val();
-    		var url = '/question/' + $('#question_id').val() + '/answer/' + $btn.attr('answer_id')
+    		var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + $btn.attr('answer_id')
     		$.post(url, {content: body}, function(result) {
     			if(result.success) {
     				$body.html(body).show();
@@ -106,7 +106,7 @@ $(document).ready(function(){
     	var $btn = $(this);
         $btn.attr('disabled', true);
         var answer_id = $btn.attr('answer_id');
-        var url = '/question/' + $('#question_id').val() + '/answer/' + answer_id + '/delete';
+        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + answer_id + '/delete';
         $.post(url, function(result) {
             if(result.success) {
             	var $parent = $btn.parents('.content');
