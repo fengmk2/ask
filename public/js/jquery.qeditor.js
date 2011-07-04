@@ -15,15 +15,16 @@
  *    <%= sanitize(@post.body,:tags => %w(strong b i u strike ol ul li address blockquote br div), :attributes => %w(src)) %>
  *
  */
+var BASEURL = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG.base : '';
 var QEDITOR_TOOLBAR_HTML = '\<div class="qeditor_toolbar"> \
   <a href="#" onclick="return QEditor.action(this,\'bold\');" title="加粗"><b>B</b></a> \
   <a href="#" onclick="return QEditor.action(this,\'italic\');" title="倾斜"><i>I</i></a> \
   <a href="#" onclick="return QEditor.action(this,\'underline\');" title="下划线"><u>U</u></a> \
   <a href="#" class="qeditor_glast" onclick="return QEditor.action(this,\'strikethrough\');" title="删除线" alt="删除线"><strike>S</strike></a>		 \
-  <a href="#" style="display:none;" onclick="return QEditor.action(this,\'formatBlock\',\'address\');"><img src="/images/qeditor/quote.gif" title="引用" alt="引用" /></a> \
-  <a href="#" style="display:none;" onclick="return QEditor.action(this,\'insertorderedlist\');"><img src="/images/qeditor/ol.gif" title="有序列表" alt="有序列表" /></a> \
-  <a href="#" style="display:none;" class="qeditor_glast" onclick="return QEditor.action(this,\'insertunorderedlist\');"><img src="/images/qeditor/ul.gif" title="无序列表" alt="无序列表" /></a> \
-  <a href="#" class="qeditor_glast" onclick="return QEditor.action(this,\'insertimage\',prompt(\'图片URL\'));"><img src="/images/qeditor/image.gif" title="插入图片" alt="插入图片" /></a> \
+  <a href="#" style="display:none;" onclick="return QEditor.action(this,\'formatBlock\',\'address\');"><img src="' + BASEURL + '/images/qeditor/quote.gif" title="引用" alt="引用" /></a> \
+  <a href="#" style="display:none;" onclick="return QEditor.action(this,\'insertorderedlist\');"><img src="' + BASEURL + '/images/qeditor/ol.gif" title="有序列表" alt="有序列表" /></a> \
+  <a href="#" style="display:none;" class="qeditor_glast" onclick="return QEditor.action(this,\'insertunorderedlist\');"><img src="' + BASEURL + '/images/qeditor/ul.gif" title="无序列表" alt="无序列表" /></a> \
+  <a href="#" class="qeditor_glast" onclick="return QEditor.action(this,\'insertimage\',prompt(\'图片URL\'));"><img src="' + BASEURL + '/images/qeditor/image.gif" title="插入图片" alt="插入图片" /></a> \
 </div>';
 
 var QEditor = {
