@@ -23,7 +23,7 @@ exports.get_category = function(req, res, next) {
 };
 
 exports.list_category = function(req, res) {
-	Category.find({}, {}, function(err, categories) {
+	Category.find({show: true}, {}, {sort: [['create_at', 'asc']]}, function(err, categories) {
 		if(err) { return next(err); }
 		// 按parent_id 排序分类
 		var sortd_categories = [];
@@ -34,7 +34,7 @@ exports.list_category = function(req, res) {
 				category.children = [];
 				for(var j = 0; j < len; j++) {
 					var sub_category = categories[j];
-					if(sub_category.show && sub_category.parent_id == category.id) {
+					if(sub_category.parent_id == category.id) {
 						sub_category.parent = category;
 						category.children.push(sub_category);
 					}
@@ -42,6 +42,28 @@ exports.list_category = function(req, res) {
 			}
 		}
 		res.partial('category_nav', {categories: sortd_categories});
+	});
+};
+
+exports.select_category = function(req, res, next) {
+	Category.find({show: true}, {}, {sort: [['create_at', 'asc']]}, function(err, categories) {
+		if(err) { return next(err); }
+		// 按parent_id 排序分类
+		var sortd_categories = [{id: '', name: '不选择'}];
+		for(var i = 0, len = categories.length; i < len; i++) {
+			var category = categories[i];
+			if(category.show && !category.parent_id) {
+				sortd_categories.push(category);
+				for(var j = 0; j < len; j++) {
+					var sub_category = categories[j];
+					if(sub_category.parent_id == category.id) {
+						sub_category.parent = category;
+						sortd_categories.push(sub_category);
+					}
+				}
+			}
+		}
+		res.partial('category_select', {categories: sortd_categories});
 	});
 };
 
@@ -54,7 +76,7 @@ exports.edit_category = function(req, res, next) {
 	if(!common.check_admin(req)) {
 		return res.redirect('/');
 	}
-	Category.find({}, {}, function(err, categories) {
+	Category.find({}, {}, {sort: [['create_at', 'asc']]}, function(err, categories) {
 		if(err) { return next(err); }
 		// 按parent_id 排序分类
 		var sortd_categories = [];
@@ -98,6 +120,7 @@ exports.save_category = function(req, res, next) {
 		if(!category) {
 			category = new Category();
 		}
+		var old_parent_id = category.parent_id;
 		category.name = name;
 		parent_reader(function(err, parent){
 			if(err) {
@@ -106,11 +129,20 @@ exports.save_category = function(req, res, next) {
 			// 不能自己关联自己
 			if(parent && parent.id != category.id) {
 				category.parent_id = parent.id;
+				if(old_parent_id == parent.id) {
+					old_parent_id = null;
+				}
 			} else {
 				category.parent_id = null;
 			}
 			category.save(function(err) {
 				res.send(common.json_data_response(err, category));
+				if(old_parent_id) {
+					Category.total_question_count_by_id(old_parent_id);
+				}
+				if(parent) {
+					parent.total_question_count();
+				}
 			});
 		});
 	});
@@ -133,6 +165,9 @@ exports.toggle_category = function(req, res) {
 		category.show = !category.show;
 		category.save(function(err) {
 			res.send(common.json_data_response(err, category));
+			if(!err) {
+				category.total_question_count();
+			}
 		});
 	});
 };
@@ -155,6 +190,9 @@ exports.delete_category = function(req, res) {
 		}
 		category.remove(function(err) {
 			res.send(common.json_data_response(err));
+			if(!err) {
+				category.total_question_count();
+			}
 		});
 	});
 };

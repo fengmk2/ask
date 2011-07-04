@@ -5,6 +5,7 @@
 var User = require('../models').User
   , utils = require('../lib/utils')
   , config = require('../config')
+  , common = require('./common')
   , querystring = require('querystring');
 
 /**
@@ -18,10 +19,10 @@ var User = require('../models').User
 exports.sync_user = function(req, res, next) {
 	var userdb = req.body ? req.body.userdb : req.query.userdb;
 	var verify = req.body ? req.body.verify : req.query.verify;
-	userdb = utils.strcode(userdb, req.headers['user-agent'], config.session_secret, true);
 	if(utils.md5(userdb + config.session_secret) != verify) {
 		return res.send(JSON.stringify({success: false, error: 'verify error', userdb: userdb}));
 	}
+	userdb = utils.strcode(userdb, req.headers['user-agent'], config.session_secret, true);
 	userdb = querystring.decode(userdb);
 	User.findOne({uid: userdb.uid}, function(err, user) {
 		if(err) return next(err);
@@ -51,8 +52,8 @@ exports.user_middleware = function(req, res, next) {
 	if(req.session && req.session.user) {
 		res._locals.current_user = req.session.user;
 	}
-	if(res._locals.current_user || !req.cookies['ask.authuser']) return next();
-	var authuser = req.cookies['ask.authuser'];
+	if(res._locals.current_user || !req.cookies[config.auth_cookie_name]) return next();
+	var authuser = req.cookies[config.auth_cookie_name];
 	authuser = utils.strcode(authuser, req.headers['user-agent'], config.session_secret, true).split('\t');
 	var uid = authuser[0];
 	var password = authuser[1];
@@ -66,5 +67,18 @@ exports.user_middleware = function(req, res, next) {
 			user.is_admin = true;
 		}
 		next();
+	});
+};
+
+exports.get_hot_users = function(req, res) {
+	var limit = parseInt(req.query.limit) || 10;
+	if(limit > 20) {
+		limit = 10;
+	}
+	User.find({}, {}, {limit: limit, sort: [['score', 'desc']]}, function(err, users) {
+		if(err) {
+			return res.send('error: ' + err.message);
+		}
+		res.partial('hot_users_partial', {users: users});
 	});
 };

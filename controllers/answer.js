@@ -23,21 +23,31 @@ exports.index = function(req, res){
  * @return {JSON} result: {success, error, answer}
  * @api public
  */
-exports.create = function(req, res, next){
-	var content = req.body.content;
+exports.create = function(req, res, next) {
 	var user = req.session.user;
+	if(!user) {
+		return res.send(common.json_no_permisssions());
+	}
+	var content = req.body.content;
+	var question = req.question;
 	var answer = new Answer({content: content});
+	var user_reader = User.fetchById(user._id);
 	answer.author_id = user._id;
-	answer.question_id = req.question.id;
+	answer.question_id = question.id;
 	answer.save(function(err) {
-		var result = {success: true};
-		if(err) {
-			result.success = false;
-			result.error = err.message || err;
-		} else {
-			result.answer = answer;
+		if(!err) {
+			// 增加评论统计
+			question.answer_count.increment();
+			question.save();
+			user_reader(function(err, user) {
+				if(user) {
+					user.increment_answer(1);
+					user.save();
+					req.session.user = user;
+				}
+			});
 		}
-		res.send(JOSN.stringify(result));
+		res.send(common.json_data_response(err, answer));
 	});
 };
 
@@ -53,23 +63,32 @@ exports.save = function(req, res, next){
 	answer.content = req.body.content;
 	answer.author_id = user._id;
 	answer.save(function(err) {
-		if(err) return next(err);
-		res.redirect('/question/' + question.id);
+		res.send(common.json_data_response(err, answer));
 	});
 };
 
 exports.delete = function(req, res, next){
-	// 只有回答作者和问题作者能删除回答
-	if(!common.check_author(req, req.answer) && !common.check_author(req, req.question)) {
-		return res.send(JSON.stringify({success: false, error: 'No permissions.'}));
+	// 只有回答作者能删除回答
+	if(!common.check_author(req, req.answer)) {
+		return res.send(common.json_no_permisssions());
 	}
+	var user_reader = User.fetchById(req.answer.author_id);
 	req.answer.remove(function(err) {
-		var success = true;
-		if(err) {
-			err = err.message || err;
-			success = false;
+		if(!err) {
+			req.question.answer_count.decrement();
+			if(req.question.answer_count < 0) {
+				req.question.answer_count = 0;
+			}
+			req.question.save();
+			user_reader(function(err, user){
+				if(user) {
+					user.increment_answer(-1);
+					user.save();
+					req.session.user = user;
+				}
+			});
 		}
-		res.send(JSON.stringify({success: success, error: err}));
+		res.send(common.json_data_response(err));
 	});
 };
 

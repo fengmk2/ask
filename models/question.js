@@ -9,17 +9,6 @@ var mongoose = require('mongoose')
   , future = require('../lib/future');
 
 /**
- * Category Schema
- */
-var CategorySchema = new Schema({
-	name: {type: String, index: true}
-  , parent_id: ObjectId
-  , show: {type: Boolean, default: true}
-  , question_count: {type: Number, default: 0}
-});
-mongoose.model('Category', CategorySchema);
-
-/**
  * Question schema
  */
 var QuestionSchema = new Schema({
@@ -29,6 +18,7 @@ var QuestionSchema = new Schema({
   , tags: [String]
   , category_id: ObjectId
   , best_answer_id: ObjectId
+  , status: {type: Number, default: 0} // 0: 未解决 1: 解决 2: 无最佳答案
   , visit_count: {type: Number, default: 0}
   , answer_count: {type: Number, default: 0}
   , end_at: {type: Date}
@@ -40,30 +30,4 @@ QuestionSchema.virtual('close_at').get(function() {
 	return this.end_at ? this.end_at : new Date(this.create_at.getTime() + 24 * 3600000 * 15);
 });
 
-/**
- * 加载关联的author数据
- * 
- * @api public
- */
-QuestionSchema.static('fetch_authors', function(questions, callback) {
-	var ids = {};
-	for(var i = 0, len = questions.length; i < len; i ++) {
-		var question = questions[i];
-		if(question.author_id && !ids[question.author_id]) {
-			ids[question.author_id] = 1;
-		}
-	}
-	User.find({_id: {$in: Object.keys(ids)}}, function(err, users) {
-		var map = {};
-		for(var i = 0, len = users.length; i < len; i ++) {
-			var user = users[i];
-			map[user.id] = user;
-		}
-		for(var i = 0, len = questions.length; i < len; i ++) {
-			var question = questions[i];
-			question.author = map[question.author_id];
-		}
-		callback(err, questions);
-	});
-});
 mongoose.model('Question', QuestionSchema);

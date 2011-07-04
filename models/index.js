@@ -35,6 +35,7 @@ mongoose.Model.fetchById = function(id, fields, options, callback) {
 };
 
 require('./user');
+require('./category');
 require('./question');
 require('./answer');
 

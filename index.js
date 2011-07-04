@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 
+require.paths.unshift('./support');
 require('./public/js/lang');
 
 var express = require('express')
@@ -11,10 +12,6 @@ var express = require('express')
   , models = require('./models');
 
 var app = express.createServer();
-//
-//app.dynamicHelpers({
-//    csrf: csrf.token
-//});
 
 /**
  * Views settings
@@ -70,6 +67,7 @@ app.resource(ask_control);
 // category control
 var category_control = require('./controllers/category');
 app.get('/category/list', category_control.list_category);
+app.get('/category/select', category_control.select_category);
 app.get('/category/edit', category_control.edit_category);
 app.post('/category/save', category_control.save_category);
 app.post('/category/delete', category_control.delete_category);
@@ -77,6 +75,7 @@ app.post('/category/toggle', category_control.toggle_category);
 app.get('/category/:id/json', category_control.get_category);
 
 var question_control = require('./controllers/question');
+app.get('/category/:category_id', question_control.index);
 app.get('/question/paging', question_control.paging);
 var question_resource = app.resource('question', question_control);
 
@@ -84,6 +83,7 @@ var answer_resource = app.resource('answer', require('./controllers/answer'));
 question_resource.add(answer_resource);
 
 // user control
+app.get('/user/hot', user_control.get_hot_users);
 app.resource('user', user_control);
 app.get('/api/sync_user', user_control.sync_user);
 app.post('/api/sync_user', user_control.sync_user);

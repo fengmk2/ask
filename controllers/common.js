@@ -2,7 +2,9 @@
  * Module dependencies.
  */
 
-var csrf = require('../lib/csrf');
+var csrf = require('../lib/csrf')
+  , future = require('../lib/future').future
+  , User = require('../models').User;
 
 exports.csrf_token = function(req, res) {
 	return csrf.token(req, res);
@@ -62,4 +64,28 @@ exports.get_paging = function(req) {
 		page_index = 0;
 	}
 	return {skip: page_index * limit, limit: limit};
+};
+
+var _fetch_authors = function(items, callback) {
+	var ids = {};
+	for(var i = 0, len = items.length; i < len; i ++) {
+		var item = items[i];
+		if(item.author_id && !ids[item.author_id]) {
+			ids[item.author_id] = 1;
+		}
+	}
+	User.fetchByIds(Object.keys(ids), function(err, map) {
+		for(var i = 0, len = items.length; i < len; i ++) {
+			var item = items[i];
+			item.author = map[item.author_id];
+		}
+		callback(err, items);
+	});
+};
+
+exports.fetch_authors = function(items, callback) {
+	if(!callback) {
+		return future.call(this, _fetch_authors, [items]);
+	}
+	return _fetch_authors(items, callback);
 };
