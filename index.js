@@ -21,6 +21,9 @@ app.dynamicHelpers({
     // it adjusts to /blog/post/add
     return '/' == app.route ? '' : app.route;
   }
+}).helpers({
+	pro_login_url: config.pro_login_url,
+	std_login_url: config.std_login_url
 });
 /**
  * Views settings
