@@ -89,6 +89,6 @@ app.get('/api/sync_user', user_control.sync_user);
 app.post('/api/sync_user', user_control.sync_user);
 
 
-app.listen(3000);
-console.log('http://localhost:3000/');
+app.listen(config.port);
+console.log('http://localhost:' + config.port);
 console.log((process.env.NODE_ENV || 'development') + ' env');
