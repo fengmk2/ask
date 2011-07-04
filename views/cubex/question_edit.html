@@ -4,7 +4,8 @@
         action = '/question/' + it.question.id;
     }
 %>
-
+<link rel="stylesheet" href="/js/colorbox/colorbox.css" />
+<script type="text/javascript" src="/js/colorbox/jquery.colorbox.js"></script>
 <div class="online_list">
     <div class="list_header">
         <div class="online_list_title">我要提问</div>
@@ -13,7 +14,12 @@
 	    <form id="question_form" class="simple_form" method="post" action="<%= action %>">
 		    <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
             <p><label for="question_title">一句话描述你的问题</label>
-            <input id="question_title" name="title" type="text" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= it.question.title || '' %>" /></p>
+            <input id="question_title" name="title" type="text" reg="[^\s]+" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= it.question.title || '' %>" /></p>
+            <p>
+            <button type="button" href="/category/select" title="选择分类" id="btn_select_category">设置分类</button>
+            <input type="hidden" id="question_category_id" name="category_id" value="<%- it.question.category_id || '' %>" />
+            <span id="question_category_name"><%= it.question.category ? it.question.category.name : '' %></span>
+            </p>
             <p><label for="question_content">可选: 更多问题描述</label>
             <textarea id="question_content" name="content" rows="10" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= it.question.content || '' %></textarea></p>
             <p><button type="submit" id="btn_submit_question" class="minibutton blue submit">提交问题</button>
@@ -24,11 +30,18 @@
     </div>
 </div>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
+
+function select_category(id, name) {
+	$.colorbox.close();
+	$('#question_category_id').val(id);
+	$('#question_category_name').html(id ? name : '');
+};
+
 $(document).ready(function(){
     $("textarea").qeditor();
     
-    var $tips = $('#question_form input[tip], #question_form textarea[tip]').tooltip();
+    var $tips = $('#question_form input[tip], #question_form textarea[tip]').tooltip({onsubmit: true});
     
     $('#btn_delete_question').click(function() {
         if(!window.confirm('真的要删除此问题吗？')) return;
@@ -47,5 +60,7 @@ $(document).ready(function(){
           dataType: 'json'
         });     
     });
+    
+    $('#btn_select_category').colorbox({opacity: 0.5});
 });
 </script>

@@ -195,7 +195,7 @@ a.go_ask_help{
 	position:relative;
 }
 .online_list_title,.money_list_title{
-	height:24px;
+	/* height:24px; */
 	margin:3px 0px 3px 15px;
 	vertical-align:middle;
 	display:inline-block;
@@ -267,6 +267,14 @@ p.info span{
 	/* color:#0364a4; */
 	line-height:21px;
 	margin:20px 15px;
+}
+.answer_content {
+	padding: 0 0 5px 0;
+	border-bottom: dashed #BBB 1px;
+}
+.answer_content_last {
+	padding-bottom: 0;
+	border-bottom: none;
 }
 .login .content{
 	margin:20px 8px;

@@ -1,0 +1,24 @@
+<div class="online_list">
+    <div class="list_header">
+        <div class="online_list_title">选择分类</div>
+    </div>
+    <div class="list_content">
+        <ul>
+        <% 
+        it.categories = it.categories || [];
+        for(var i = 0, len = it.categories.length; i < len; i++) { 
+            var category = it.categories[i];
+        %>
+            <li>
+                <p>
+                <% if(category.parent_id) { %>
+                |--
+                <% } %>
+                <input type="checkbox" onclick="select_category('<%- category.id %>', '<%- category.name %>');" />
+                <a title="<%= category.name %>" href="javascript:select_category('<%- category.id %>', '<%- category.name %>');"><%= category.name %></a>
+                </p>
+            </li>
+        <% } %>
+        </ul>
+    </div>
+</div>

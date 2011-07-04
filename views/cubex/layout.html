@@ -32,17 +32,13 @@
             	<div class="go_ask_button">
                 	<a href="/question/new"><button>我要提问</button></a>
                 </div>
-                <a  href="" class="go_ask_help">帮助</a>
+                <a  href="#" class="go_ask_help">帮助</a>
             </div>
         </div>
 	</div>
 	<div id="body">
     	<div id="main_left">
         	<div class="title">问题分类</div>
-            <div class="question_num">
-            	<span id="resolved">已解决问题数：3</span>
-                <span id="noresolved">待解决问题数：150</span>
-            </div>
             <div class="question_info"></div>
     	</div>
         <div id="main_center">
@@ -54,10 +50,15 @@
             	<div class="title">用户</div>
                 <div class="content">
                     您好，<a href="/my/questions" title="数据魔方"><%= it.current_user.name %></a>
+                    | 积分 <%= it.current_user.score %>
+                    <br />
+                    <a href="/question?my=1">我的问题</a>(<%- it.current_user.question_count %>)
+                    |
+                    <a href="/question?my=1">我的回答</a>(<%- it.current_user.answer_count %>)
+                    <% if(it.current_user.is_admin) { %>
                     <br />
                     <a href="/category/edit">编辑分类</a>
-                    |
-                    <a href="/question?my=1">我的问题</a>
+                    <% } %>
                 </div>
             <% } else { %>
                 <div class="title">登录</div>
@@ -67,50 +68,10 @@
                 </div>
             <% } %>
             </div>
-            <div class="notice">
-            	<div class="title">公告</div>
-                <a href="" class="more">更多</a>
-                <div class="content">
-                	<ul>
-                    	<li>数据魔方问答上线试运营</li>
-                    </ul>
-                </div>
-            </div>
             <div class="hot_user">
             	<div class="title">总积分榜</div>
                 	<a href="" class="more">更多</a>
-                <div class="content">
-                	<ul>
-                    	<li>
-                        	<p>
-                            	<span class="num">1</span>
-                                <span class="user_name">数据魔方专家</span>
-                                <span class="hot_num">215</span>
-                            </p>
-                        </li>
-                        <li>
-                        	<p>
-                            	<span class="num">2</span>
-                                <span class="user_name">空无</span>
-                                <span class="hot_num">115</span>
-                            </p>
-                        </li>
-                        <li>
-                        	<p>
-                            	<span class="num">3</span>
-                                <span class="user_name">苏千</span>
-                                <span class="hot_num">115</span>
-                            </p>
-                        </li>
-                        <li>
-                        	<p>
-                            	<span class="num">4</span>
-                                <span class="user_name">苏千</span>
-                                <span class="hot_num">115</span>
-                            </p>
-                        </li>
-                    </ul>
-                </div>
+                <div class="content">Loading...</div>
             </div>
     	</div>
     </div>

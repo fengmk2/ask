@@ -1,0 +1,13 @@
+<ul>
+    <% for(var i = 0, len = it.users.length; i < len; i++) { 
+        var user = it.users[i];
+    %>
+    <li>
+        <p>
+            <span class="num"><%- i + 1 %></span>
+            <span class="user_name"><%= user.name %></span>
+            <span class="hot_num"><%- user.score %></span>
+        </p>
+    </li>
+    <% } %>
+</ul>

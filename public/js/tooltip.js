@@ -58,15 +58,15 @@
         }
     	getthis.check = function(){
     		var isSubmit = true;
-                    getthis.each(function(){
-                        var thisReg = new RegExp($(this).attr('reg'));
-                        if(!thisReg.test($(this).val()))
-                        {
-                            $(this).removeClass('tooltipinputok').addClass('tooltipinputerr');
-                            isSubmit = false;
-                        }
-                    });
-                    return isSubmit;	
+            getthis.each(function(){
+                var thisReg = new RegExp($(this).attr('reg'));
+                if(!thisReg.test($(this).val()))
+                {
+                    $(this).removeClass('tooltipinputok').addClass('tooltipinputerr');
+                    isSubmit = false;
+                }
+            });
+            return isSubmit;	
     	};
     	return getthis;
     };

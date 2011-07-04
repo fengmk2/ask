@@ -29,8 +29,17 @@ $(document).ready(function() {
 		hide_loading();
 	});
 	
-	// 显示分类菜单
-	$.get('/category/list', function(html) {
-		$('.question_info').html(html);
-	});
+	if($('.question_info').length > 0) {
+		// 显示分类菜单
+		$.get('/category/list', function(html) {
+			$('.question_info').html(html);
+		});
+	}
+	
+	if($('.hot_user').length > 0) {
+		// 显示积分榜
+		$.get('/user/hot', function(html) {
+			$('.hot_user .content').html(html);
+		});
+	}
 });
