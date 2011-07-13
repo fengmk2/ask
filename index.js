@@ -6,13 +6,26 @@ require.paths.unshift('./support');
 require('./public/js/lang');
 
 var express = require('express')
-  , resource = require('express-resource')
+  , Resource = require('express-resource')
   , csrf = require('./lib/csrf')
   , config = require('./config')
   , models = require('./models');
 
+Resource.prototype._mapDefaultAction = Resource.prototype.mapDefaultAction;
+Resource.prototype.mapDefaultAction = function(key, fn){
+    switch (key) {
+        case 'save':
+            this.post(fn);
+            break;
+        case 'delete':
+            this.post('delete', fn);
+            break;
+    }
+    this._mapDefaultAction(key, fn);
+};
+
 var app = module.exports = express.createServer();
-app.dynamicHelpers({
+app.dynamicLocals({
   base: function(){
     // return the app's mount-point
     // so that urls can adjust. For example
@@ -21,20 +34,20 @@ app.dynamicHelpers({
     // it adjusts to /blog/post/add
     return '/' == app.route ? '' : app.route;
   }
-}).helpers({
+}).locals({
 	pro_login_url: config.pro_login_url,
 	std_login_url: config.std_login_url
 });
+
 /**
  * Views settings
  */
 app.set("view engine", "html");
 app.set("views", __dirname + '/views/cubex');
 //app.set('view options', {
-//    layout: __dirname + '/views/layout'
+//    layout: 'layout'
 //});
 var ejs = require('ejs');
-ejs.it = true;
 app.register(".html", ejs);
 // add more filters
 var filters = require('./lib/filters');
@@ -66,8 +79,9 @@ app.configure(function(){
     	secret: config.session_secret
       //, store: store
     }));
-    app.use(csrf.check());
+    
 });
+app.use(csrf.check());
 
 var user_control = require('./controllers/user');
 app.use(user_control.user_middleware);
@@ -88,7 +102,8 @@ app.get('/category/:id/json', category_control.get_category);
 
 var question_control = require('./controllers/question');
 app.get('/category/:category_id', question_control.index);
-app.get('/question/paging', question_control.paging);
+app.post('/question/:qid/focus', question_control.focus);
+app.post('/question/:qid/unfocus', question_control.unfocus);
 var question_resource = app.resource('question', question_control);
 
 var answer_resource = app.resource('answer', require('./controllers/answer'));
@@ -96,6 +111,11 @@ question_resource.add(answer_resource);
 
 // user control
 app.get('/user/hot', user_control.get_hot_users);
+app.post('/user/:user_id/follow', user_control.follow);
+app.post('/user/:user_id/unfollow', user_control.unfollow);
+app.get('/user/:user_id/followers', user_control.followers);
+app.get('/user/:user_id/following', user_control.following);
+
 app.resource('user', user_control);
 app.get('/api/sync_user', user_control.sync_user);
 app.post('/api/sync_user', user_control.sync_user);

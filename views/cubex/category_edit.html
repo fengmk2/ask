@@ -5,14 +5,14 @@
     </div>
     <div class="content">
         <form id="category_form" class="simple_form">
-            <input type="hidden" id="csrf" name="csrf" value="<%- it.csrf %>" />
+            <input type="hidden" id="csrf" name="csrf" value="<%- csrf %>" />
             <input type="hidden" id="category_id" value="" />
             <p>
                 <label for="category_parent_id">父分类</label>
                 <select id="category_parent_id">
                     <option selected="selected" value="">不选择</option>
-                    <% for(var i = 0, len = it.categories.length; i < len; i++) { 
-                        var category = it.categories[i];
+                    <% for(var i = 0, len = categories.length; i < len; i++) { 
+                        var category = categories[i];
                         if(!category.parent_id) {
                     %>
                     <option value="<%- category.id %>"><%= category.name %></option>
@@ -37,16 +37,16 @@
     <div class="list_content">
         <ul>
         <% 
-        it.categories = it.categories || [];
-        for(var i = 0, len = it.categories.length; i < len; i++) { 
-            var category = it.categories[i];
+        categories = categories || [];
+        for(var i = 0, len = categories.length; i < len; i++) { 
+            var category = categories[i];
         %>
             <li>
                 <p>
                 <% if(category.parent_id) { %>
                 |--
                 <% } %>
-                <a title="<%= category.name %>" <% if(!category.show) { %>style="text-decoration: line-through;"<% } %> href="<%- it.base %>/category/<%- category.id %>"><%= category.name %></a>
+                <a title="<%= category.name %>" <% if(!category.show) { %>style="text-decoration: line-through;"<% } %> href="<%- base %>/category/<%- category.id %>"><%= category.name %></a>
                 [
                 <a href="javascript:edit_category('<%- category.id %>');">编辑</a>
                 <% if(category.can_delete) { %>

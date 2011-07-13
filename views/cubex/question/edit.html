@@ -1,0 +1,66 @@
+<%
+    var action = '/question';
+    if(!question.isNew) {
+        action = '/question/' + question.id;
+    }
+%>
+<link rel="stylesheet" href="<%- base %>/js/colorbox/colorbox.css" />
+<script type="text/javascript" src="<%- base %>/js/colorbox/jquery.colorbox.js"></script>
+<div>
+    <h2>添加问题</h2>
+    <form id="question_form" class="simple_form" method="post" action="<%- base %><%- action %>">
+        <input type="hidden" id="csrf" name="csrf" value="<%- csrf %>" />
+        <p><label for="question_title">一句话描述你的问题</label>
+        <input id="question_title" name="title" type="text" reg="[^\s]+" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= question.title || '' %>" /></p>
+        <p>
+        <button type="button" href="<%- base %>/category/select" class="button_white" title="选择分类" id="btn_select_category">设置分类</button>
+        <input type="hidden" id="question_category_id" name="category_id" value="<%- question.category_id || '' %>" />
+        <span id="question_category_name"><%= question.category ? question.category.name : '' %></span>
+        </p>
+        <p><label for="question_content">可选: 更多问题描述</label></p>
+        <p>
+            <textarea id="question_content" name="content" rows="10" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= question.content || '' %></textarea>
+        </p>
+        <p class="text_right">
+            <% if(!question.isNew) { %>
+            <button type="button" id="btn_delete_question" class="button_white">删除问题</button>
+            <% } %>
+            <button type="submit" id="btn_submit_question" class="button_blue">提交问题</button>
+        </p>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+function select_category(id, name) {
+    $.colorbox.close();
+    $('#question_category_id').val(id);
+    $('#question_category_name').html(id ? name : '');
+};
+
+$(document).ready(function(){
+    $("textarea").qeditor();
+    
+    var $tips = $('#question_form input[tip], #question_form textarea[tip]').tooltip({onsubmit: true});
+    
+    $('#btn_delete_question').click(function() {
+        if(!window.confirm('真的要删除此问题吗？')) return;
+        var url = window.location.pathname.replace('/edit', '/delete');
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: {},
+          success: function(result) {
+              if(result.success) {
+                  window.location = SITE_CONFIG.base + '/';
+              } else {
+                  alert(result.error);
+              }
+          },
+          dataType: 'json'
+        });     
+    });
+    
+    $('#btn_select_category').colorbox({opacity: 0.5});
+});
+</script>

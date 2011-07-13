@@ -6,6 +6,7 @@ var models = require('../models')
   , Question = models.Question
   , Answer = models.Answer
   , User = models.User
+  , Log = models.Log
   , common = require('./common');
 
 
@@ -38,13 +39,21 @@ exports.create = function(req, res, next) {
 		if(!err) {
 			// 增加评论统计
 			question.answer_count.increment();
-			question.save();
+			question.save(function() {});
 			user_reader(function(err, user) {
 				if(user) {
 					user.increment_answer(1);
-					user.save();
+					user.save(function() {});
 					req.session.user = user;
 				}
+			});
+			// 记录日志
+			var log = new Log({action: 'answer', target_id: answer.id, 
+				title: answer.content, user_id: answer.author_id, 
+				target_parent_id: question.id,
+				target_parent_title: question.title});
+			log.save(function(err) {
+				console.log(err);
 			});
 		}
 		res.send(common.json_data_response(err, answer));

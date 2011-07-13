@@ -13,8 +13,9 @@ var AnswerSchema = new Schema({
 	content: String
   , question_id: {type: ObjectId, index: true}
   , author_id: {type: ObjectId}
-  , create_at: {type: Date, default: Date.now, index: true}
-  , update_at: {type: Date, default: Date.now}
+  , like_count: {type: Number, 'default': 0}
+  , create_at: {type: Date, 'default': Date.now, index: true}
+  , update_at: {type: Date, 'default': Date.now}
 });
 
 mongoose.model('Answer', AnswerSchema);

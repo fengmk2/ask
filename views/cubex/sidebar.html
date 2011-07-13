@@ -1,0 +1,46 @@
+<% if(locals.user) { %>
+<% if(locals.current_user && current_user._id !== user.id) { %>
+<div class="follow_control section">
+    <% if(!user.focus) { %><a uid="<%- user.id %>" href="javascript:;" class="button_green button_follow button_follow_<%- user.id %>">关注</a>
+    <% } else { %><a uid="<%- user.id %>" href="javascript:;" class="button_white button_follow unfollow button_follow_<%- user.id %>">取消关注</a><% } %>
+</div>
+<% } %>
+<div class="user_info_mini c section">
+    <ul class="user_stats">
+        <li>
+        <a href="<%- base %>/user/<%- user.id %>/followers"><strong><%- user.follower_count %></strong><span>关注他的人</span></a>
+        </li>
+        <li>
+        <a href="<%- base %>/user/<%- user.id %>/following"><strong><%- user.following_count %></strong><span>他关注的人</span></a>
+        </li>
+    </ul>
+</div>
+<% } %>
+
+<% if(locals.question && !question.isNew && locals.current_user) { %>
+<div class="section">
+    <% if(!question.focus) { %><a qid="<%- question.id %>" href="javascript:;" class="button_green button_focus button_focus_<%- question.id %>">关注</a>
+    <% } else { %><a qid="<%- question.id %>" href="javascript:;" class="button_white button_focus unfocus  button_focus_<%- question.id %>">取消关注</a><% } %>
+</div>
+<% } %>
+
+
+<div class="section">
+    <ul>
+        <li><a href="<%- base %>/question">所有问题</a></li>
+        <% if(locals.current_user) { %> 
+        <li><a href="<%- base %>/question?focus=1">我关注的问题</a></li>
+        <% } %>
+    </ul>
+</div>
+<div class="section">
+    <ul>
+    <% if(locals.current_user) { %> 
+        <li>您好，<a href="<%- base %>/user/<%- current_user._id %>" title="数据魔方"><%= current_user.name %></a></li>
+        <li><a href="<%- base %>/category/edit">编辑分类</a></li>
+    <% } else { %>
+        <li><a class="pro_login" href="<%- pro_login_url %>" title="登录专业版数据魔方"></a></li>
+        <li><a class="std_login" href="<%- std_login_url %>" title="登录标准版数据魔方"></a></li>
+    <% } %>
+    </ul>
+</div>

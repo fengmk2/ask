@@ -36,7 +36,7 @@ UserSchema.method('_increment_count', function(count, per_score, name) {
 });
 // 增加问题数量
 UserSchema.method('increment_question', function(count) {
-	this._increment_count(count, 10, 'question_count');
+	this._increment_count(count, 1, 'question_count');
 });
 
 // 增加回答数量
@@ -44,18 +44,18 @@ UserSchema.method('increment_answer', function(count) {
 	this._increment_count(count, 5, 'answer_count');
 });
 
-UserSchema.static('fetchByIds', function(ids, callback) {
-	this.find({_id: {$in: ids}}, function(err, users) {
-		var map = {};
-		if(users) {
-			for(var i = 0, len = users.length; i < len; i ++) {
-				var user = users[i];
-				map[user.id] = user;
-			}
-		}
-		callback(err, map);
-	});
-});
+//UserSchema.static('fetchByIds', function(ids, callback) {
+//	this.find({_id: {$in: ids}}, function(err, users) {
+//		var map = {};
+//		if(users) {
+//			for(var i = 0, len = users.length; i < len; i ++) {
+//				var user = users[i];
+//				map[user.id] = user;
+//			}
+//		}
+//		callback(err, map);
+//	});
+//});
 mongoose.model('User', UserSchema);
 
 module.exports = mongoose.model('User');

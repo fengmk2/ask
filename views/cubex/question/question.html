@@ -1,0 +1,21 @@
+<div class="item">
+    <h2>
+    <a title="<%= question.title%>" href="<%- base %>/question/<%- question.id %>"><%=: question.title | fixed_string:150 %></a>
+    </h2>
+    <p class="item_info">
+        <a href="<%- base %>/user/<%- question.user.id %>"><%= question.user.name %></a>
+        <%=: 'question' | action_name %>
+        &bull;
+        <%- question.anser_count || 0 %> 个答案
+        &bull;
+        <% if(locals.current_user) { %>
+            <% if(question.focus) { %>
+            <a href="javascript:" qid="<%- question.id %>" class="button_focus button_focus_<%- question.id %> unfocus">取消关注</a>
+            <% } else { %>
+            <a href="javascript:" qid="<%- question.id %>" class="button_focus button_focus_<%- question.id %>">关注</a>
+            <% } %>
+        &bull;
+        <% } %>
+        <span class="datetime"><%- question.create_at.format() %></span>
+    </p>
+</div>

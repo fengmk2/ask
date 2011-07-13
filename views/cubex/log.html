@@ -1,0 +1,22 @@
+<div class="item">
+    <h2>
+    <a title="<%= log.question.title%>" href="<%- base %>/question/<%- log.question.id %>"><%=: log.question.title | fixed_string:150 %></a>
+    </h2>
+    <p class="item_info">
+        <a href="<%- base %>/user/<%- log.user.id %>"><%= log.user.name %></a>
+        <%=: log.action | action_name %>
+        &bull;
+        <%- log.question.answer_count || 0 %> 个答案
+        &bull;
+        <% if(log.question.focus) { %>
+        <a href="javascript:" qid="<%- log.question.id %>" class="button_focus button_focus_<%- log.question.id %> unfocus">取消关注</a>
+        <% } else { %>
+        <a href="javascript:" qid="<%- log.question.id %>" class="button_focus button_focus_<%- log.question.id %>">关注</a>
+        <% } %>
+        &bull;
+        <span class="datetime"><%- log.create_at.format() %></span>
+    </p>
+    <div class="item_content">
+        <%- log.title %>
+    </div>
+</div>

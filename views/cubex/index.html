@@ -1,22 +1,4 @@
-<div class="online_list">
-    <div class="list_header">
-        <div class="online_list_title">网友正在问</div>
-        <a href="<%- it.base %>/question" class="more">更多</a>
-    </div>
-    <div class="list_content">
-        <ul>
-        <% 
-        it.questions = it.questions || [];
-        for(var i = 0, len = it.questions.length; i < len; i++) { 
-            var question = it.questions[i];
-        %>
-            <li>
-                <p>
-                <a title="<%= question.title%>" href="<%- it.base %>/question/<%- question.id %>"><%=: question.title | fixed_string:30 %></a>
-                <span><%- question.answer_count %>问答</span>
-                </p>
-            </li>
-        <% } %>
-        </ul>
-    </div>
-</div>
+
+<%- partial('log', logs) %>
+
+<p><a href="javascript:;" id="load_more" class="button_white r3px button_more">更多</a></p>

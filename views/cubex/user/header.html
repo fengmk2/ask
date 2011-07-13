@@ -1,0 +1,15 @@
+<h1><a href="<%- base %>/user/<%= user.id %>"><%= user.name %></a></h1>
+<div class="tab_nav">
+    <ul>
+        <li> 
+           <a href="<%- base %>/user/<%= user.id %>">主页</a>
+        </li>
+        <li><a href="<%- base %>/user/<%= user.id %>">积分 <span class="r"><%- user.score %></span></a></li>
+        <li> 
+           <a href="<%- base %>/user/<%= user.id %>/questions">问过 <span class="r"><%- user.question_count || 0 %></span></a>
+        </li>
+        <li> 
+           <a href="<%- base %>/user/<%= user.id %>/answers">答过 <span class="r"><%- user.answer_count || 0 %></span></a>
+        </li>
+    </ul>
+</div>

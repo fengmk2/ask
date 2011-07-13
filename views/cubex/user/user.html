@@ -1,0 +1,21 @@
+<div class="item">
+    <h2>
+    <a title="<%= user.name %>" href="<%- base %>/user/<%- user.id %>"><%= user.name %></a>
+    </h2>
+    <% if(locals.current_user && current_user._id !== user.id) {%>
+    <p class="fr">
+        <% if(!user.focus) { %>
+        <a uid="<%- user.id %>" href="javascript:;" class="btn button_follow button_green button_follow_<%- user.id %>">关注</a>
+        <% } else { %>
+        <a uid="<%- user.id %>" href="javascript:;" class="btn button_follow button_white unfollow button_follow_<%- user.id %>">取消关注</a>
+        <% } %>
+    </p>
+    <% } %>
+    <p class="item_info">
+        问过 <%- user.question_count || 0 %>
+        &bull;
+        答过 <%- user.answer_count || 0 %>
+        &bull;
+        <span class="datetime"><%- user.create_at.format() %></span>
+    </p>
+</div>

@@ -1,0 +1,4 @@
+
+var ACTIONS = {
+	question: 'question'
+};

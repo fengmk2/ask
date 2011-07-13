@@ -25,12 +25,25 @@
         ^
         |
         |
-    Question <--------- Answer
-        ^                 ^
-        |                 |
-        |                 |
-       User              User
-        
+    Question <--------------- Answer <-- Like
+        ^                       ^
+        |                       |
+    Ask | Focus                 |
+        |                       |
+        |         follow        |
+       User <--> Relation <--> User
+       
+    Log: 记录所有事情, 用户提问, 回答, 关注
+    {
+        id
+        action: question, answer, focus, follow
+        title
+        target_id
+        target_parent_id
+        target_parent_title
+        user_id
+        created_at
+    }
 
 ## TODO
 
@@ -46,3 +59,10 @@
 4. csrf ！
 5. html editor !
 6. ！！用户关注，相互发信息
+
+## home_timeline
+
+包含用自己提交的问题, 关注用户有动作的问题(提问, 回答, 关注)
+
+* 通过用户获得自己提问和关注的问题id
+* 通过用户关注的所有用户的

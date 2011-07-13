@@ -1,0 +1,171 @@
+<div class="item">
+    <h1>
+    <%= question.title %>
+    </h1>
+    <div class="description">
+    <%- question.content %>
+    <% if(question.editable) {%>
+    <a href="<%- base %>/question/<%- question.id %>/edit" class="icon">修改问题</a>
+    <% } %>
+    </div>
+</div>
+<input type="hidden" id="question_id" value="<%- question.id %>" />
+
+<div class="item_summary">
+    <h4><%- answers.length %> 个答案 
+    <% if(can_answer) { %>
+    &bull; 
+    <a href="#add_answer">添加答案</a>
+    <% } %>
+    </h4>
+</div>
+
+<% if(answers && answers.length > 0) { %>
+<div class="answers">
+    <% for(var i = 0, len = answers.length; i < len; i++) {
+        var answer = answers[i];
+    %>
+    <div class="item">
+        <input type="hidden" class="item_id" value="<%- answer.id %>" />
+        <p class="item_info">
+            <a href="<%- base %>/user/<%- answer.author.id %>"><%= answer.author.name %></a>
+            &bull;
+            <%- answer.create_at.format() %>
+            &bull;
+            <a href="javascript:">感谢作者</a>
+            &bull;
+            <a href="javascript:">没有帮助</a>
+        </p>
+        <div class="item_content"><%- answer.content %></div>
+        <% if(locals.current_user && current_user.name === answer.author.name) { %>
+        <a href="javascript:;" class="icon icon_edit">修改答案</a>
+        <div class="editor_wrap">
+            <p><textarea class="editor"></textarea></p>
+            <p class="text_right">
+                <a href="javascript:;" class="btn_cancel_edit">取消</a>
+                <a href="javascript:;" class="btn_save_edit button_blue">完成</a>
+            </p>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
+</div>
+<% } %>
+
+<% if(can_answer) { %>
+<div>
+    <h2>添加答案</h2>
+    <p><textarea id="answer_content" class="answer_editor"></textarea></p>
+    <p class="text_right"><a href="javascript:;" id="btn_submit_answer" class="button_blue">添加答案</a></p>
+</div>
+<% } %>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $("textarea").qeditor();
+    
+    $('.icon_edit').click(function() {
+        var $btn = $(this);
+        var $content = $btn.prev('.item_content');
+        $content.hide();
+        $btn.hide();
+        var $wrap = $btn.next('.editor_wrap');
+        $wrap.find('.qeditor_preview').html($content.html()).change();
+        $wrap.show();
+    });
+    
+    $('.btn_cancel_edit').click(function() {
+        var $btn = $(this);
+        var $wrap = $btn.parents('.editor_wrap');
+        $wrap.prevAll('.item_content').show();
+        $wrap.prevAll('.icon_edit').show();
+        $wrap.hide();
+    });
+    
+    $('.btn_save_edit').click(function() {
+        var $btn = $(this);
+        var $wrap = $btn.parents('.editor_wrap');
+        var text = $wrap.find('.editor').val()
+          , answer_id = $wrap.prevAll('.item_id').val();
+        var url = window.location.pathname;
+        if(url.lastIndexOf('/') === url.length - 1) {
+            url = url.substring(0, url.length - 1);
+        }
+        $.post(url + '/answer/' + answer_id, {content: text}, function(result) {
+            $wrap.prevAll('.item_content').html(text).show();
+            $wrap.prevAll('.icon_edit').show();
+            $wrap.hide();
+        });
+    });
+    
+    $('#btn_submit_answer').click(function() {
+        var $content = $('#answer_content');
+        var content = $content.val();
+        if(!content) {
+            return;
+        }
+        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer';
+        var $btn = $(this);
+        $btn.attr('disabled', true);
+        $.post(url, {content: content}, function(result) {
+            if(result.success) {
+                window.location = window.location;
+            } else {
+                alert(result.error);
+                $btn.attr('disabled', false);
+            }
+        }, 'json');
+    });
+    
+    // 修改回答
+    $('.btn_edit_answer').click(function() {
+        var $btn = $(this);
+        var $content = $btn.parents('.content');
+        var $editor = $content.find('.editor');
+        var $body = $content.find('.answer_body');
+        if($editor.length > 0) {
+            $btn.attr('disabled', true);
+            var body = $editor.val();
+            var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + $btn.attr('answer_id')
+            $.post(url, {content: body}, function(result) {
+                if(result.success) {
+                    $body.html(body).show();
+                    $editor.qeditor(false);
+                    $editor.remove();
+                } else {
+                    alert(result.error);
+                }
+                $btn.attr('disabled', false);
+            }, 'json');
+        } else {
+            $body.hide();
+            $body.after('<textarea class="editor">' + $body.html() + '</textarea>');
+            $content.find('.editor').qeditor();
+        }
+    });
+    
+    // 绑定删除按钮
+    $('.btn_delete_answer').click(function() {
+        if(!window.confirm('确定要删除此回答吗？')) {
+            return;
+        }
+        var $btn = $(this);
+        $btn.attr('disabled', true);
+        var answer_id = $btn.attr('answer_id');
+        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + answer_id + '/delete';
+        $.post(url, function(result) {
+            if(result.success) {
+                var $parent = $btn.parents('.content');
+                if($parent.hasClass('answer_content_last')) {
+                    $parent.prev().addClass('answer_content_last');
+                }
+                $parent.remove();
+            } else {
+                alert(result.error);
+                $btn.attr('disabled', false);
+            }
+        }, 'json');
+    });
+});
+</script>
