@@ -25,6 +25,10 @@ Resource.prototype.mapDefaultAction = function(key, fn){
 };
 
 var app = module.exports = express.createServer();
+if(app.dynamicHelpers) { // new version express
+    app.dynamicLocals = app.dynamicHelpers;
+    app.locals = app.helpers; 
+}
 app.dynamicLocals({
   base: function(){
     // return the app's mount-point
