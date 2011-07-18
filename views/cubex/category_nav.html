@@ -1,16 +1,20 @@
 <% 
- it.categories = it.categories || [];
- for(var i = 0, len = it.categories.length; i < len; i++) { 
-     var category = it.categories[i];
+ var categories = locals.categories || [];
+ var current_category_id = null;
+ if(locals.category) {
+    current_category_id = category.id;
+ }
+ for(var i = 0, len = categories.length; i < len; i++) { 
+     var category = categories[i];
 %>
-<div>
-    <a href="<%- it.base %>/category/<%- category.id %>" class="info_title"><%= category.name %><span>(<%- category.question_count %>)</span></a>
+<div class="category_section">
+    <h3><a <% if(current_category_id == category.id) { %>class="selected"<%}%> href="<%- base %>/category/<%- category.id %>"><%= category.name %><span>(<%- category.question_count %>)</span></a></h3>
     <ul>
     <% for(var j = 0, l = category.children.length; j < l; j++) { 
         var child = category.children[j];
     %>
         <li>
-            <a href="<%- it.base %>/category/<%- child.id %>"><%= child.name %><span>(<%- child.question_count %>)</span></a>
+            <a <% if(current_category_id == child.id) { %>class="selected"<%}%> href="<%- base %>/category/<%- child.id %>"><%= child.name %><span>(<%- child.question_count %>)</span></a>
         </li>
     <% } %> 
     </ul>

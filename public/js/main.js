@@ -65,4 +65,9 @@ $(document).ready(function() {
             }
         });
     });
+    
+    // 加载分类导航
+    $.get(SITE_CONFIG.base + '/category/list', function(html) {
+        $('#category_nav').html(html);
+    });
 });

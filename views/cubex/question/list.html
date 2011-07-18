@@ -1,3 +1,10 @@
+<% if(locals.focus) { %>
+<h2>我关注的问题</h2>
+<% } %>
+
+<% if(locals.category) { %>
+<h2><%= category.name %> <span class="item_info">共有 <%- category.question_count %> 个问题</span></h2>
+<% } %>
 <%- partial('question/question', questions) %>
 
 <p><a href="javascript:;" id="load_more" class="button_white r3px button_more">更多</a></p>

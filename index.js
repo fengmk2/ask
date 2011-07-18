@@ -2,7 +2,6 @@
  * Module dependencies.
  */
 
-require.paths.unshift('./support');
 require('./public/js/lang');
 
 var express = require('express')
@@ -13,15 +12,17 @@ var express = require('express')
 
 Resource.prototype._mapDefaultAction = Resource.prototype.mapDefaultAction;
 Resource.prototype.mapDefaultAction = function(key, fn){
-    switch (key) {
+    switch(key) {
         case 'save':
             this.post(fn);
             break;
         case 'delete':
             this.post('delete', fn);
             break;
+        default:
+            this._mapDefaultAction(key, fn);
+            break;
     }
-    this._mapDefaultAction(key, fn);
 };
 
 var app = module.exports = express.createServer();
@@ -105,7 +106,7 @@ app.post('/category/toggle', category_control.toggle_category);
 app.get('/category/:id/json', category_control.get_category);
 
 var question_control = require('./controllers/question');
-app.get('/category/:category_id', question_control.index);
+app.get('/category/:category_id', question_control.list_questions_by_category);
 app.post('/question/:qid/focus', question_control.focus);
 app.post('/question/:qid/unfocus', question_control.unfocus);
 var question_resource = app.resource('question', question_control);

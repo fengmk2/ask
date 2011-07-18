@@ -2,13 +2,16 @@
  * Module dependencies.
  */
 
-var User = require('../models').User
-  , Relation = require('../models').Relation
+var models = require('../models')
+  , User = models.User
+  , Relation = models.Relation
+  , Focus = models.Focus
   , utils = require('../lib/utils')
   , config = require('../config')
   , common = require('./common')
   , querystring = require('querystring')
-  , get_logs = require('./ask').get_logs;
+  , get_logs = require('./ask').get_logs
+  , EventProxy = require('../lib/eventproxy').EventProxy;
 
 exports.load = function(id, callback) {
     User.findById(id, callback);
@@ -26,13 +29,13 @@ exports.sync_user = function(req, res, next) {
 	var userdb = req.body ? req.body.userdb : req.query.userdb;
 	var verify = req.body ? req.body.verify : req.query.verify;
 	if(utils.md5(userdb + config.session_secret) != verify) {
-		return res.send(JSON.stringify({success: false, error: 'verify error', userdb: userdb}));
+	    return res.send(common.json_data_response({message: 'verify error, userdb: ' + userdb}));
 	}
 	var user_agent = req.headers['user-agent'];
 	userdb = utils.strcode(userdb, user_agent, config.session_secret, true);
 	userdb = querystring.decode(userdb);
 	if(!userdb.uid) {
-	    return res.send(JSON.stringify({success: false, error: 'userdb error', userdb: userdb}));
+	    return res.send(common.json_data_response({message: 'userdb error, userdb: ' + userdb}));
 	}
 	User.findOne({uid: userdb.uid}, function(err, user) {
 		if(err) return next(err);
@@ -45,7 +48,7 @@ exports.sync_user = function(req, res, next) {
 			if(err) { return next(err); }
 			var auth_token = utils.strcode(userdb.uid + '\t' + utils.md5(userdb.uid), user_agent, config.session_secret);
 			res.cookie(config.auth_cookie_name, auth_token, { maxAge: 900000, path: '/' });
-			res.send(JSON.stringify({success: true, user: user}));
+			res.send(common.json_data_response(null, {user: user}));
 		});
 	});
 };
@@ -165,8 +168,89 @@ function read_relaction(uid, fid) {
     return Relation.fetchByQuery(uid && fid ? {uid: uid, fid: fid} : null);
 };
 
+/**
+ * https://gist.github.com/1084423
+ * 
+ * EventProxy
+ * https://gist.github.com/1084499
+ * 
+ * 显示指定用户 profile 页面
+ * 
+ * 获取关注和被关注的数据
+ * 获取此用户最近的活动数据
+ *  - 活动数据里面包含各种数据的聚合
+ * 判断当前登录的用户与指定用户是否已经相互关注
+ * 
+ */
 exports.show = function(req, res, next) {
-    var can_follow = false, can_unfollow = false;
+    var current_user_id = req.session.user_id
+      , query = {user_id: req.user.id};
+    if(req.query.max) {
+        query.create_at = {$lt: new Date(req.query.max)};
+    }
+    var event = new EventProxy();
+    event.assign('relation', 'follower_counts', 'logs', function(relation, follower_counts, logs) {
+        if(req.xhr) {
+            res.partial('log', logs);
+        } else {
+            if(relation) {
+                req.user.focus = true;
+            }
+            if(follower_counts) {
+                req.user.follower_count = follower_counts.follower_count;
+                req.user.following_count = follower_counts.following_count;
+            }
+            res.render('user/detail', {user: req.user, logs: logs});
+        }
+    });
+    event.on('error', function(err) {
+        event.removeAllListeners();
+        next(err);
+    });
+    get_logs(query, function(err, logs) {
+        if(err) { return event.emit('error', err); }
+        // 判断是否已关注
+        if(current_user_id && logs && logs.length > 0) {
+            var qids = {};
+            for(var i = 0, len = logs.length; i < len; i++) {
+                var log = logs[i];
+                qids[log.question.id] = log.question;
+            }
+            Focus.find({qid: {$in: Object.keys(qids)}, uid: req.session.user_id}, function(err, focuses) {
+                if(focuses) {
+                    for(var i = 0, len = focuses.length; i < len; i++) {
+                        qids[focuses[i].qid].focus = true;
+                    }
+                }
+                event.emit('logs', logs);
+            });
+        } else {
+            event.emit('logs', logs);
+        }
+    });
+    
+    if(!req.xhr) {
+        // 加载完整页面，还需要获取关系信息，和跟随人数
+        if(current_user_id) {
+            Relation.findOne({uid: req.user.id, fid: current_user_id}, function(err, relation) {
+                if(err) { return event.emit('error', err); }
+                event.emit('relation', relation);
+            });
+        } else {
+            event.emit('relation');
+        }
+        read_follower_and_following_counts(req.user.id)(function(err, follower_count, following_count) {
+            if(err) { return event.emit('error', err); }
+            event.emit('follower_counts', {follower_count: follower_count, following_count: following_count});
+        });
+    } else {
+        // 无需获取
+        event.emit('relation');
+        event.emit('follower_counts');
+    }
+};
+
+exports._show = function(req, res, next) {
     var current_user_id = req.session.user_id;
     var query = {user_id: req.user.id};
     if(req.query.max) {
@@ -185,28 +269,14 @@ exports.show = function(req, res, next) {
                 if(err) return next(err);
                 req.user.follower_count = follower_count;
                 req.user.following_count = following_count;
-                
                 if(req.xhr) {
                     res.partial('log', logs);
                 } else {
-                    res.render('user/detail', {user: req.user, logs: logs, 
-                        can_unfollow: can_unfollow, can_follow: can_follow});
+                    res.render('user/detail', {user: req.user, logs: logs});
                 }
             });
         });
     });
-};
-
-function read_follower_and_following_counts(user_id) {
-    var followers_count_reader = Relation.count({uid: user_id});
-    var following_count_reader = Relation.count({fid: user_id});
-    return function(callback) {
-        followers_count_reader(function(err1, count1) {
-            following_count_reader(function(err2, count2) {
-                callback(err1 || err2, count1, count2);
-            });
-        });
-    };
 };
 
 function handler_follow_users(following, req, res, next) {

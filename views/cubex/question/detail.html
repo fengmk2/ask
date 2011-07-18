@@ -13,10 +13,15 @@
 
 <div class="item_summary">
     <h4><%- answers.length %> 个答案 
+    <% if(question.category) { %>
+    &bull; 
+    分类: <a href="<%-base%>/category/<%-question.category.id%>"><%= question.category.name %></a>
+    <% } %>
     <% if(can_answer) { %>
     &bull; 
     <a href="#add_answer">添加答案</a>
     <% } %>
+    
     </h4>
 </div>
 

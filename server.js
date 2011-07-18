@@ -2,7 +2,6 @@
  * Module dependencies.
  */
 
-require.paths.unshift('./support');
 require('./public/js/lang');
 
 var express = require('express')

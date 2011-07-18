@@ -9,6 +9,7 @@ var models = require('../models')
   , User = models.User
   , Log = models.Log
   , Focus = models.Focus
+  , EventProxy = require('../lib/eventproxy').EventProxy
   , common = require('./common');
 
 exports.load = function(id, callback) {
@@ -26,51 +27,127 @@ function get_focus_qids(req, callback) {
     });
 };
 
-exports.index = function(req, res, next) {
+function find_questions(req, query, callback) {
     var max_datetime = req.query.max;
+    if(max_datetime) {
+        query.create_at = {$lt: new Date(max_datetime)};
+    }
+    // 先获取问题，然后加载用户数据
+    Question.find(query, {}, {limit: 20, sort: [['create_at', 'desc']]}, function(err, questions) {
+        if(err) { return callback(err); }
+        var uids = [];
+        for(var i = 0, len = questions.length; i < len; i++) {
+            var question = questions[i];
+            uids.push(question.author_id);
+        }
+        User.fetchByIds(uids, function(err, users) {
+            if(!err) {
+                for(var i = 0, len = questions.length; i < len; i++) {
+                    var question = questions[i];
+                    question.user = users[question.author_id];
+                }
+            }
+            callback(err, questions);
+        });
+    });
+};
+
+exports.index = function(req, res, next) {
+    var max_datetime = req.query.max, focus = req.query.focus === '1';
     var query = {};
     if(max_datetime) {
         query.create_at = {$lt: new Date(max_datetime)};
     }
     get_focus_qids(req, function(err, map_qids) {
         if(err) { return next(err); }
-        if(req.query.focus === '1') {
+        if(focus) {
+            // TODO 关注过多会有问题
             query._id = {'$in': Object.keys(map_qids)};
         }
         if(req.query.q) {
             try {
                 query.title = new RegExp(req.query.q, 'i');
             } catch(e) {
-                
+                // TODO log error?
             }
         }
-        Question.find(query, {}, {limit: 20, sort: [['create_at', 'desc']]}, function(err, questions) {
+        find_questions(req, query, function(err, questions) {
             if(err) { return next(err); }
-            var uids = [];
             for(var i = 0, len = questions.length; i < len; i++) {
                 var question = questions[i];
                 if(map_qids[question.id]) {
                     question.focus = true;
                 }
-                uids.push(question.author_id);
             }
-            User.fetchByIds(uids, function(err, users) {
-                for(var i = 0, len = questions.length; i < len; i++) {
-                    var question = questions[i];
-                    question.user = users[question.author_id];
-                }
-                if(req.xhr) {
-                    res.partial('question/question', questions);
-                } else {
-                    res.render('question/list', {questions: questions, query: req.query.q});
-                }
-            });
+            if(req.xhr) {
+                res.partial('question/question', questions);
+            } else {
+                res.render('question/list', {questions: questions, query: req.query.q, focus: focus});
+            }
         });
     });
 };
 
-exports.new = function(req, res){
-    if(!req.session.user_id) {
+exports.list_questions_by_category = function(req, res, next) {
+    var category_id = req.params.category_id;
+    var event = new EventProxy();
+    event.assign('category', 'questions', function(category, questions) {
+        if(req.xhr) {
+            res.partial('question/question', questions);
+        } else {
+            res.render('question/list', {questions: questions, category: category});
+        }
+    });
+    event.on('category_ids', function(category_ids) {
+        find_questions(req, {category_id: {$in: category_ids}}, function(err, questions) {
+            if(err) { return event.emit('error', err); }
+            // 如果当前用户已登录，则判断问题是否已关注
+            if(req.session.user_id && questions && questions.length > 0) {
+                var qids = {};
+                for(var i = 0, len = questions.length; i < len; i++) {
+                    var q = questions[i];
+                    qids[q.id] = q;
+                }
+                Focus.find({qid: {$in: Object.keys(qids)}, uid: req.session.user_id}, function(err, focuses) {
+                    if(focuses) {
+                        for(var i = 0, len = focuses.length; i < len; i++) {
+                            qids[focuses[i].qid].focus = true;
+                        }
+                    }
+                    event.emit('questions', questions);
+                });
+            } else {
+                event.emit('questions', questions);
+            }
+        });
+    });
+    event.on('error', function(err) {
+        event.removeAllListeners();
+        next(err);
+    });
+    // 先获取分类及其子分类
+    Category.findOne({_id: category_id}, function(err, category) {
+        if(err) { return event.emit('error', err); }
+        if(!category) {
+            return res.redirect('/');
+        }
+        event.emit('category', category);
+        var category_ids = [category.id];
+        Category.find({parent_id: category_id}, function(err, children) {
+            if(err) { return event.emit('error', err); }
+            if(children) {
+                for(var i = 0, len = children.length; i < len; i++) {
+                    var child = children[i];
+                    category_ids.push(child.id);
+                }
+            }
+            event.emit('category_ids', category_ids);
+        });
+    });
+};
+
+exports.new = function(req, res) {
+    if(!req.session || !req.session.user_id) {
         return res.redirect('/');
     }
 	var question = new Question();

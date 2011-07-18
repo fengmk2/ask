@@ -135,20 +135,30 @@ a.go_ask_help{
 /*内容*/
 #body{
 	margin:0px auto;
-	width:950px;
+	width:1000px;
 	position:relative;
 }
 #main_left{
 	margin-top:10px;
 	float:left;
-	border:1px solid #DDDDDD;
+	width:200px;
 }
 #main_right{
 	float:right;
 	margin: 25px 10px 10px 10px;
 }
-#main_left,#main_right{
-	width:270px;
+#main_right{
+	width:250px;
+}
+#main_center{
+    float:left;
+    width:500px;
+    margin:10px;
+}
+#main_center_left{
+    float:left;
+    width:620px;
+    margin:10px;
 }
 /*左侧栏样式*/
 .title{
@@ -191,16 +201,7 @@ a.go_ask_help{
 .question_info div ul li{
 	line-height:21px;
 }
-#main_center{
-	float:left;
-	width:548px;
-	margin:10px 10px 0px;
-}
-#main_center_left{
-    float:left;
-    width:620px;
-    margin:10px;
-}
+
 /*中栏样式*/
 .online_list, .money_list {
 	border:1px solid #e8cb98;
@@ -593,4 +594,13 @@ ul.user_stats li strong {
 	-moz-border-radius: 30px;
 	-o-border-radius: 30px;
 	border-radius: 30px;
+}
+
+.category_section ul {
+    margin-left: 20px;
+}
+
+.category_section a.selected {
+	color: black;
+	text-decoration: underline;
 }
