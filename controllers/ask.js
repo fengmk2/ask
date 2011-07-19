@@ -101,3 +101,12 @@ var get_logs = exports.get_logs = function(query, callback) {
         });
     });
 };
+
+exports.monitor = function(req, res) {
+    var usage = process.memoryUsage();
+    var html = '';
+    for(var k in usage) {
+        html += k + ': ' + (usage[k] / 1024 / 1024) + 'MB <br/>';
+    }
+    res.send(html);
+};

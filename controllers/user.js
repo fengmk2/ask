@@ -197,6 +197,7 @@ exports.show = function(req, res, next) {
     }
     var event = new EventProxy();
     event.assign('relation', 'follower_counts', 'logs', function(relation, follower_counts, logs) {
+        //event.removeAllListeners();
         if(req.xhr) {
             res.partial('log', logs);
         } else {

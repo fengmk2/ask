@@ -95,6 +95,7 @@ app.configure(function() {
 // ask control
 var ask_control = require('./controllers/ask');
 app.resource(ask_control);
+app.get('/_monitor', ask_control.monitor);
 
 // category control
 var category_control = require('./controllers/category');
