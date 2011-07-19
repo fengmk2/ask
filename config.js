@@ -6,3 +6,6 @@ exports.std_login_url = '../../suqian/webui/s/login?rd=/ask';
 exports.port = 9888;
 
 exports.admins = {'淘宝数据魔方': true};
+
+exports.session_db = 'mongodb://localhost/ask_session';
+exports.db = 'mongodb://localhost/ask';
