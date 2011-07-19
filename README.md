@@ -1,23 +1,19 @@
 # An ask and answer system base on node.js
 
-
 ## Install
 
-    $ sudo npm install express lingo mongoose
-    $ cd support/
-    $ git clone git://github.com/fengmk2/ejs.git
-    $ git clone git://github.com/fengmk2/express-resource.git
+    $ sudo npm install -g express mongoose ejs express-resource node-dev
     
 ### mongodb 
     
-下载
-
-    $ wget http://fastdl.mongodb.org/linux/mongodb-linux-i686-1.8.1.tgz
+根据你的系统环境下载: [http://www.mongodb.org/downloads](http://www.mongodb.org/downloads)
 
 启动脚步
-
+    
+    $ mkdir -p $HOME/data/mongodb
+    # 假设你的mongodb安装在 $HOME/local/mongodb
     $ $HOME/local/mongodb/bin/mongod --dbpath=$HOME/data/mongodb --fork --logpath=$HOME/data/mongodb.log    
-    $ node server.js
+    $ node-dev server.js
     
 ## Models
 
