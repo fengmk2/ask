@@ -6,7 +6,7 @@
         <a href="<%- base %>/user/<%- question.user.id %>"><%= question.user.name %></a>
         <%=: 'question' | action_name %>
         &bull;
-        <%- question.anser_count || 0 %> 个答案
+        <%- question.answer_count || 0 %> 个答案
         &bull;
         <% if(locals.current_user) { %>
             <% if(question.focus) { %>
