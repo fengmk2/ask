@@ -4,6 +4,7 @@
 
 var models = require('../models')
   , common = require('./common')
+  , config = require('../config')
   , Log = models.Log
   , Question = models.Question
   , Relation = models.Relation
@@ -24,7 +25,7 @@ exports.index = function(req, res, next) {
         if(err) {
             return next(err);
         }
-        var ids = [];
+        var ids = [config.show_log_user_id];
         if(req.session.user_id) {
             ids.push(req.session.user_id);
         }
