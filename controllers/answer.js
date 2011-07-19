@@ -65,7 +65,7 @@ exports.create = function(req, res, next) {
  * @api public
  */
 exports.save = function(req, res, next){
-	if(!common.check_author(req, req.answer)) return res.redirect('/');
+	if(!common.check_editable(req, req.answer)) return res.redirect('/');
 	var answer = req.answer;
 	var user = req.session.user;
 	answer.content = req.body.content;
@@ -77,7 +77,7 @@ exports.save = function(req, res, next){
 
 exports.delete = function(req, res, next){
 	// 只有回答作者能删除回答
-	if(!common.check_author(req, req.answer)) {
+	if(!common.check_editable(req, req.answer)) {
 		return res.send(common.json_no_permisssions());
 	}
 	var user_reader = User.fetchById(req.answer.author_id);

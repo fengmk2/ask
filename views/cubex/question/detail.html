@@ -6,6 +6,7 @@
     <%- question.content %>
     <% if(question.editable) {%>
     <a href="<%- base %>/question/<%- question.id %>/edit" class="icon">修改问题</a>
+    <a href="javascript:;" class="icon question_delete_link">删除问题</a>
     <% } %>
     </div>
 </div>
@@ -21,7 +22,6 @@
     &bull; 
     <a href="#add_answer">添加答案</a>
     <% } %>
-    
     </h4>
 </div>
 
@@ -39,6 +39,8 @@
             <% if(answer.editable) { %>
             &bull;
             <a href="javascript:" class="icon_edit_link">修改答案</a>
+            &bull;
+            <a href="javascript:" class="answer_delete_link">删除答案</a>
             <% } %>
             <!--  
             &bull;
@@ -50,6 +52,7 @@
         <div class="item_content"><%- answer.content %></div>
         <% if(answer.editable) { %>
         <a href="javascript:;" class="icon icon_edit">修改答案</a>
+        <a href="javascript:;" class="icon answer_delete_link">删除答案</a>
         <div class="editor_wrap">
             <p><textarea class="editor"></textarea></p>
             <p class="text_right">
@@ -119,12 +122,12 @@ $(document).ready(function(){
         if(!content || content === '<br>') {
             return;
         }
-        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer';
+        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val();
         var $btn = $(this);
         $btn.attr('disabled', true);
-        $.post(url, {content: content}, function(result) {
+        $.post(url+ '/answer', {content: content}, function(result) {
             if(result.success) {
-                window.location = window.location;
+                window.location = url;
             } else {
                 alert(result.error);
                 $btn.attr('disabled', false);
@@ -132,52 +135,40 @@ $(document).ready(function(){
         }, 'json');
     });
     
-    // 修改回答
-    $('.btn_edit_answer').click(function() {
-        var $btn = $(this);
-        var $content = $btn.parents('.content');
-        var $editor = $content.find('.editor');
-        var $body = $content.find('.answer_body');
-        if($editor.length > 0) {
-            $btn.attr('disabled', true);
-            var body = $editor.val();
-            var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + $btn.attr('answer_id')
-            $.post(url, {content: body}, function(result) {
-                if(result.success) {
-                    $body.html(body).show();
-                    $editor.qeditor(false);
-                    $editor.remove();
-                } else {
-                    alert(result.error);
-                }
-                $btn.attr('disabled', false);
-            }, 'json');
-        } else {
-            $body.hide();
-            $body.after('<textarea class="editor">' + $body.html() + '</textarea>');
-            $content.find('.editor').qeditor();
-        }
-    });
-    
     // 绑定删除按钮
-    $('.btn_delete_answer').click(function() {
-        if(!window.confirm('确定要删除此回答吗？')) {
+    $('.answer_delete_link').click(function() {
+        if(!confirm('确定要删除此回答吗？')) {
             return;
         }
         var $btn = $(this);
-        $btn.attr('disabled', true);
-        var answer_id = $btn.attr('answer_id');
+        $btn.hide();
+        var $parent = $btn.parents('.item');
+        var answer_id = $parent.find('.item_id').val();
         var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer/' + answer_id + '/delete';
         $.post(url, function(result) {
             if(result.success) {
-                var $parent = $btn.parents('.content');
-                if($parent.hasClass('answer_content_last')) {
-                    $parent.prev().addClass('answer_content_last');
-                }
                 $parent.remove();
             } else {
                 alert(result.error);
-                $btn.attr('disabled', false);
+                $btn.show();
+            }
+        }, 'json');
+    });
+    
+    // 删除问题
+    $('.question_delete_link').click(function() {
+        if(!confirm('确定要删除此回答吗？')) {
+            return;
+        }
+        var $btn = $(this);
+        $btn.hide();
+        var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/delete';
+        $.post(url, function(result) {
+            if(result.success) {
+                window.location = SITE_CONFIG.base + '/';
+            } else {
+                alert(result.error);
+                $btn.show();
             }
         }, 'json');
     });

@@ -13,7 +13,7 @@
         <p><label for="question_title">一句话描述你的问题</label>
         <input id="question_title" name="title" type="text" reg="[^\s]+" class="long" tip="请将问题说明清楚，让网友更好地为您解答。" value="<%= question.title || '' %>" /></p>
         <p>
-        <button type="button" href="<%- base %>/category/select" class="button_white" title="选择分类" id="btn_select_category">设置分类</button>
+        <button type="button" href="<%- base %>/category/select" class="button_green" title="选择分类" id="btn_select_category">设置分类</button>
         <input type="hidden" id="question_category_id" name="category_id" value="<%- question.category_id || '' %>" />
         <span id="question_category_name"><%= question.category ? question.category.name : '' %></span>
         </p>
