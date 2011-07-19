@@ -18,14 +18,13 @@
         </p>
         <p>
             <label for="category_name">分类名称</label>
-            <input id="category_name" name="name" type="text" class="long" value="" />
+            <input id="category_name" name="name" type="text" class="long" value="" reg="[^\s]+" class="long" tip="请给分类一个名字" />
         </p>
-        <p>
-            <button type="button" id="btn_submit_category" class="button_green">保存</button>
+        <p class="text_right">
+            <button type="button" id="btn_submit_category" class="button_green">保存分类</button>
         </p>
     </form>
 </div>
-<hr />
 <div>
     <h2>当前分类</h2>
     <ul>
@@ -99,6 +98,8 @@ function toggle_category(id) {
 };
 
 $(document).ready(function() {
+    $('.simple_form input[tip]').tooltip({onsubmit: true});
+    
 	$('#btn_submit_category').click(function() {
 		var data = {csrf: $('#csrf').val()};
 		data.id = $('#category_id').val();

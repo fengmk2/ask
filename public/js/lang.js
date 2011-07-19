@@ -34,3 +34,14 @@ Date.prototype.timeleft = function(day, hour, minute) {
 	var minutes = (hours - Math.floor(hours)) * 60;
 	return Math.floor(days) + day + Math.floor(hours) + hour + Math.ceil(minutes) + minute;
 };
+
+if(!String.prototype.endswith) {
+    String.prototype.endswith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
+
+// 为字符串增加去除所有html tag和空白的字符的方法
+String.prototype.remove_html_tag = function() {
+    return this.replace(/(<.*?>|&nbsp;|\s)/ig, '');
+};

@@ -147,9 +147,6 @@ exports.list_questions_by_category = function(req, res, next) {
 };
 
 exports.new = function(req, res) {
-    if(!req.session || !req.session.user_id) {
-        return res.redirect('/');
-    }
 	var question = new Question();
 	res.render('question/edit', {question: question, csrf: common.csrf_token(req, res)});
 };
@@ -158,6 +155,7 @@ exports.show = function(req, res, next){
 	var question = req.question;
 	question.visit_count.increment();
 	question.save();
+	question.editable = common.check_editable(req, question);
 	// 并行读取category和author
 	var category_reader = Category.fetchById(question.category_id);
 	var author_reader = User.fetchById(question.author_id);
@@ -180,6 +178,7 @@ exports.show = function(req, res, next){
 				}
 				for(var i = 0, len = answers.length; i < len; i++) {
 					var answer = answers[i];
+					answer.editable = common.check_editable(req, answer);
 					if(user_id == answer.author_id) {
 						answer.editable = true;
 						can_answer = false; // 已经回答过
@@ -206,7 +205,9 @@ exports.show = function(req, res, next){
 };
 
 exports.edit = function(req, res){
-	if(!common.check_author(req, req.question)) return res.redirect('/');
+	if(!common.check_editable(req, req.question)) {
+	    return res.redirect('/');
+	}
 	Category.fetchById(req.question.category_id, function(err, category) {
 		if(err) return next(err);
 		req.question.category = category;
@@ -221,9 +222,10 @@ exports.create = function(req, res, next) {
 	}
 	var title = req.body.title
 	  , category_id = req.body.category_id
-	  , content = req.body.content;
-	var question = new Question({title: title, content: content});
-	var category_reader = null;
+	  , content = req.body.content
+	  , question = new Question({title: title, content: content})
+	  , category_reader = null;
+	
 	if(category_id) {
 		question.category_id = category_id;
 		category_reader = Category.fetchById(category_id);
@@ -236,7 +238,6 @@ exports.create = function(req, res, next) {
 			// 增加用户积分
 			author.increment_question(1);
 			author.save();
-			req.session.user = author;
 			if(category_reader) {
 				category_reader(function(err, category) {
 					category.total_question_count();
@@ -254,8 +255,10 @@ exports.create = function(req, res, next) {
 	});
 };
 
-exports.save = function(req, res, next){
-	if(!common.check_author(req, req.question)) return res.redirect('/');
+exports.save = function(req, res, next) {
+	if(!common.check_editable(req, req.question)) {
+	    return res.redirect('/');
+	}
 	var question = req.question;
 	var user = req.session.user;
 	question.title = req.body.title;
@@ -294,8 +297,8 @@ exports.save = function(req, res, next){
 	});
 };
 
-exports.delete = function(req, res, next){
-	if(!common.check_author(req, req.question)) {
+exports.delete = function(req, res, next) {
+	if(!common.check_editable(req, req.question)) {
 		return res.send(common.json_no_permisssions);
 	}
 	User.findById(req.session.user._id, function(err, author) {
@@ -310,8 +313,7 @@ exports.delete = function(req, res, next){
 			if(author.score < 0) {
 				author.score = 0;
 			}
-			author.save(function(){});
-			req.session.user = author;
+			author.save();
 			res.send(common.json_data_response());
 		});
 	});

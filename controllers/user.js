@@ -65,6 +65,7 @@ exports.user_middleware = function(req, res, next) {
 	res.local('current_user', null);
 	if(req.session && req.session.user) {
 		res.local('current_user', req.session.user);
+		res.local('current_user_is_admin', req.session.user.is_admin);
 	}
 	if(req.session.user || !req.cookies[config.auth_cookie_name]) return next();
 	var authuser = req.cookies[config.auth_cookie_name];
@@ -77,11 +78,17 @@ exports.user_middleware = function(req, res, next) {
 		if(user && user.password === password) {
 			req.session.user = user;
 			req.session.user_id = user.id;
-			user.is_admin = true;
+			user.is_admin = config.admins[user.name];
 			res.local('current_user', user);
 		}
 		next();
 	});
+};
+
+exports.logout = function(req, res) {
+    res.clearCookie(config.auth_cookie_name, {path: '/'});
+    req.session.user_id = req.session.user = null;
+    res.redirect('/');
 };
 
 /**

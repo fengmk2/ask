@@ -43,8 +43,7 @@ exports.create = function(req, res, next) {
 			user_reader(function(err, user) {
 				if(user) {
 					user.increment_answer(1);
-					user.save(function() {});
-					req.session.user = user;
+					user.save();
 				}
 			});
 			// 记录日志
@@ -93,7 +92,6 @@ exports.delete = function(req, res, next){
 				if(user) {
 					user.increment_answer(-1);
 					user.save();
-					req.session.user = user;
 				}
 			});
 		}

@@ -5,7 +5,8 @@ var utils = require('./lib/utils')
 
 var user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.55 Safari/535.1';
 
-var user = {uid: '3333', username: '我是莫非文档'};
+var user = {uid: '淘宝数据魔方', username: '淘宝数据魔方'};
+var user = {uid: '我不是管理员', username: '我不是管理员'};
 console.log(utils.strcode(user.uid + '\t' + utils.md5(user.uid), user_agent, config.session_secret));
 
 var userdb = qs.encode({username: user.username, password: utils.md5(user.uid), uid: user.uid, usertype: 1});

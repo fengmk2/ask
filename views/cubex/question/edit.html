@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="<%- base %>/js/colorbox/colorbox.css" />
 <script type="text/javascript" src="<%- base %>/js/colorbox/jquery.colorbox.js"></script>
 <div>
-    <h2>添加问题</h2>
+    <h2>添加问题 <% if(!locals.current_user) {%>(<span style="color:red;">用户登录后才能提交问题</span>)<%}%></h2>
     <form id="question_form" class="simple_form" method="post" action="<%- base %><%- action %>">
         <input type="hidden" id="csrf" name="csrf" value="<%- csrf %>" />
         <p><label for="question_title">一句话描述你的问题</label>
@@ -19,13 +19,17 @@
         </p>
         <p><label for="question_content">可选: 更多问题描述</label></p>
         <p>
-            <textarea id="question_content" name="content" rows="10" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= question.content || '' %></textarea>
+            <textarea id="question_content" name="content" rows="30" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= question.content || '' %></textarea>
         </p>
         <p class="text_right">
+            <% if(locals.current_user) {%>
             <% if(!question.isNew) { %>
             <button type="button" id="btn_delete_question" class="button_white">删除问题</button>
             <% } %>
             <button type="submit" id="btn_submit_question" class="button_blue">提交问题</button>
+            <% } else { %>
+            <button type="button" class="button_white">用户登录后才能提交问题</button>
+            <% } %>
         </p>
     </form>
 </div>
@@ -41,7 +45,7 @@ function select_category(id, name) {
 $(document).ready(function(){
     $("textarea").qeditor();
     
-    var $tips = $('#question_form input[tip], #question_form textarea[tip]').tooltip({onsubmit: true});
+    $('#question_form input[tip], #question_form textarea[tip]').tooltip({onsubmit: true});
     
     $('#btn_delete_question').click(function() {
         if(!window.confirm('真的要删除此问题吗？')) return;

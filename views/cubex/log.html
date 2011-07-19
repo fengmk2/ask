@@ -17,6 +17,6 @@
         <span class="datetime"><%- log.create_at.format() %></span>
     </p>
     <div class="item_content">
-        <%- log.title %>
+        <%=: log.title.remove_html_tag() | fixed_string:150 %>
     </div>
 </div>

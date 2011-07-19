@@ -36,13 +36,19 @@
             <a href="<%- base %>/user/<%- answer.author.id %>"><%= answer.author.name %></a>
             &bull;
             <%- answer.create_at.format() %>
+            <% if(answer.editable) { %>
+            &bull;
+            <a href="javascript:" class="icon_edit_link">修改答案</a>
+            <% } %>
+            <!--  
             &bull;
             <a href="javascript:">感谢作者</a>
             &bull;
             <a href="javascript:">没有帮助</a>
+             -->
         </p>
         <div class="item_content"><%- answer.content %></div>
-        <% if(locals.current_user && current_user.name === answer.author.name) { %>
+        <% if(answer.editable) { %>
         <a href="javascript:;" class="icon icon_edit">修改答案</a>
         <div class="editor_wrap">
             <p><textarea class="editor"></textarea></p>
@@ -70,6 +76,9 @@
 $(document).ready(function(){
     $("textarea").qeditor();
     
+    $('.icon_edit_link').click(function() {
+        $(this).parent().nextAll('.icon_edit').click();
+    });
     $('.icon_edit').click(function() {
         var $btn = $(this);
         var $content = $btn.prev('.item_content');
@@ -107,7 +116,7 @@ $(document).ready(function(){
     $('#btn_submit_answer').click(function() {
         var $content = $('#answer_content');
         var content = $content.val();
-        if(!content) {
+        if(!content || content === '<br>') {
             return;
         }
         var url = SITE_CONFIG.base + '/question/' + $('#question_id').val() + '/answer';

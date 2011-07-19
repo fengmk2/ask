@@ -30,15 +30,16 @@ if(app.dynamicHelpers) { // new version express
     app.dynamicLocals = app.dynamicHelpers;
     app.locals = app.helpers; 
 }
+var c = 0;
 app.dynamicLocals({
-  base: function(){
-    // return the app's mount-point
-    // so that urls can adjust. For example
-    // if you run this example /post/add works
-    // however if you run the mounting example
-    // it adjusts to /blog/post/add
-    return '/' == app.route ? '' : app.route;
-  }
+    base: function(req) {
+        // return the app's mount-point
+        // so that urls can adjust. For example
+        // if you run this example /post/add works
+        // however if you run the mounting example
+        // it adjusts to /blog/post/add
+        return '/' == this.route ? '' : this.route;
+    }
 }).locals({
 	pro_login_url: config.pro_login_url,
 	std_login_url: config.std_login_url
@@ -74,22 +75,22 @@ app.configure('production', function(){
     app.set('view cache', true);
 });
 
+var user_control = require('./controllers/user');
+
 /**
  * Middleware settings: bodyParser, cookieParser, session
  */
-app.configure(function(){
+app.configure(function() {
 	app.use(express.bodyParser());
+	app.use(express.logger());
     app.use(express.cookieParser());
     app.use(express.session({
     	secret: config.session_secret
       //, store: store
     }));
-    
+    app.use(user_control.user_middleware);
+    //app.use(csrf.check());
 });
-app.use(csrf.check());
-
-var user_control = require('./controllers/user');
-app.use(user_control.user_middleware);
 
 // ask control
 var ask_control = require('./controllers/ask');
@@ -115,6 +116,7 @@ var answer_resource = app.resource('answer', require('./controllers/answer'));
 question_resource.add(answer_resource);
 
 // user control
+app.get('/logout', user_control.logout);
 app.get('/user/hot', user_control.get_hot_users);
 app.post('/user/:user_id/follow', user_control.follow);
 app.post('/user/:user_id/unfollow', user_control.unfollow);

@@ -19,18 +19,20 @@ exports.csrf_token = function(req, res) {
  */
 exports.check_author = function(req, obj) {
 	var user = req.session.user;
-	if(!user || user._id != obj.author_id) {
-		return false;
-	}
-	return true;
+	return user && user._id == obj.author_id;
 };
 
 exports.check_admin = function(req) {
 	var user = req.session.user;
-	if(!user || !user.is_admin) {
-		return false;
-	}
-	return true;
+	return user && user.is_admin;
+};
+
+/**
+ * Check if current user can edit the obj
+ */
+exports.check_editable = function(req, obj) {
+    var user = req.session.user;
+    return user && (user._id == obj.author_id || user.is_admin);
 };
 
 exports.json_data_response = function(err, data) {
@@ -47,7 +49,7 @@ exports.json_data_response = function(err, data) {
 };
 
 var _json_no_permisssions = null;
-exports.json_no_permisssions = function() {
+exports.json_no_perms = exports.json_no_permisssions = function() {
 	if(!_json_no_permisssions) {
 		_json_no_permisssions = JSON.stringify({success: false, error: 'No permissions.'});
 	}
