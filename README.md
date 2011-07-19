@@ -13,6 +13,12 @@
     $ mkdir -p $HOME/data/mongodb
     # 假设你的mongodb安装在 $HOME/local/mongodb
     $ $HOME/local/mongodb/bin/mongod --dbpath=$HOME/data/mongodb --fork --logpath=$HOME/data/mongodb.log    
+
+## Clone
+
+    $ cd $HOME/git
+    $ git clone git://github.com/fengmk2/ask.git
+    $ cd ask
     $ node-dev server.js
     
 ## Models
