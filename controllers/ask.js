@@ -9,7 +9,8 @@ var models = require('../models')
   , Question = models.Question
   , Relation = models.Relation
   , Focus = models.Focus
-  , User = models.User;
+  , User = models.User
+  , os = require('os');
 
 
 exports.index = function(req, res, next) {
@@ -105,9 +106,10 @@ var get_logs = exports.get_logs = function(query, callback) {
 
 exports.monitor = function(req, res) {
     var usage = process.memoryUsage();
-    var html = '';
+    var mb = 1024 * 1024;
+    var html = 'OS: total ' + os.totalmem() / mb + 'MB free ' + os.freemem() / mb + 'MB<br/> process:<br />';
     for(var k in usage) {
-        html += k + ': ' + (usage[k] / 1024 / 1024) + 'MB <br/>';
+        html += k + ': ' + (usage[k] / mb) + 'MB <br/>';
     }
     res.send(html);
 };

@@ -8,10 +8,10 @@
             <a href="<%- base %>/user/<%= user.id %>">积分 <span class="r"><%- user.score %></span></a>
         </li>
         <li> 
-            <a href="<%- base %>/user/<%= user.id %>">问过 <span class="r"><%- user.question_count || 0 %></span></a>
+            <a href="<%- base %>/user/<%= user.id %>/questions">问过 <span class="r"><%- user.question_count || 0 %></span></a>
         </li>
         <li> 
-            <a href="<%- base %>/user/<%= user.id %>">答过 <span class="r"><%- user.answer_count || 0 %></span></a>
+            <a href="<%- base %>/user/<%= user.id %>/answers">答过 <span class="r"><%- user.answer_count || 0 %></span></a>
         </li>
     </ul>
 </div>
