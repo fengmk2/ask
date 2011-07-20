@@ -405,7 +405,7 @@ exports.questions_of_mine =function(req,res,next) {
 	 if(max_datetime) {
 	     query.create_at = {$lt: new Date(max_datetime)};
 	 }
-	 if(req.session.user_id && req.params.user_id) {
+	 if(req.params.user_id) {
 		 query.author_id=req.params.user_id;
 		 exports.load(req.params.user_id,function(err, users){
 			 if(err) {return next(err);}
@@ -466,7 +466,7 @@ exports.answers_of_mine =function(req,res,next) {
 	 if(max_datetime) {
 	     query.create_at = {$lt: new Date(max_datetime)};
 	 }
-	 if(req.session.user_id && req.params.user_id) {
+	 if(req.params.user_id) {
 		 query.author_id=req.params.user_id;
 		 exports.load(req.params.user_id,function(err, users){
 			 if(err) {return next(err);}
