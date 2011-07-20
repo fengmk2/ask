@@ -6,10 +6,15 @@ var models = require('../models')
   , User = models.User
   , Relation = models.Relation
   , Focus = models.Focus
+  , Answer = models.Answer
   , utils = require('../lib/utils')
   , config = require('../config')
   , common = require('./common')
   , querystring = require('querystring')
+  , Question = models.Question
+  , Category = models.Category
+  , Answer = models.Answer
+  , Log = models.Log
   , get_logs = require('./ask').get_logs
   , EventProxy = require('../lib/eventproxy').EventProxy;
 
@@ -350,4 +355,156 @@ exports.followers = function(req, res, next) {
 
 exports.following = function(req, res, next) {
     handler_follow_users(true, req, res, next);
+    
+};
+
+
+function get_focus_qids(req, callback) {
+    Focus.find({uid: req.session.user_id}, ['qid'], function(err, items) {
+        if(err) { return callback(err); }
+        var qids = {};
+        for(var i = 0, len = items.length; i < len; i++) {
+            qids[items[i].qid] = 1;
+        }
+        callback(null, qids);
+    });
+};
+
+function find_questions(req, query, callback) {
+    var max_datetime = req.query.max;
+    if(max_datetime) {
+        query.create_at = {$lt: new Date(max_datetime)};
+    }
+    // 先获取问题，然后加载用户数据
+    Question.find(query, {}, {limit: 20, sort: [['create_at', 'desc']]}, function(err, questions) {
+        if(err) { return callback(err); }
+        var uids = [];
+        for(var i = 0, len = questions.length; i < len; i++) {
+            var question = questions[i];
+            uids.push(question.author_id);
+        }
+        User.fetchByIds(uids, function(err, users) {
+            if(!err) {
+                for(var i = 0, len = questions.length; i < len; i++) {
+                    var question = questions[i];
+                    question.user = users[question.author_id];
+                }
+            }
+            callback(err, questions);
+        });
+    });
+};
+
+/*
+ * 获取用户提问的问题
+ */
+exports.questions_of_mine =function(req,res,next) {
+	 var max_datetime = req.query.max;focus = req.query.focus === '1';
+	 query={};
+	 if(max_datetime) {
+	     query.create_at = {$lt: new Date(max_datetime)};
+	 }
+	 if(req.session.user_id && req.params.user_id) {
+		 query.author_id=req.params.user_id;
+		 exports.load(req.params.user_id,function(err, users){
+			 if(err) {return next(err);}
+			 get_focus_qids(req, function(err, map_qids) {
+			        if(err) { return next(err); }
+					 find_questions(req, query, function(err, questions) {
+					     if(err) { return next(err); }
+					     for(var i = 0, len = questions.length; i < len; i++) {
+				                var question = questions[i];
+				                if(map_qids[question.id]) {
+				                    question.focus = true;
+				                }
+				         }
+					         if(req.xhr) {
+					        	 res.partial('question/question', questions);
+					         } else {
+					              res.render('question/list', {questions: questions,focus: focus,user: users, user_ask:true});
+					         }
+					    });
+			 });
+		 });
+	 }
+};
+
+function find_answers(req, query, callback) {
+	 var max_datetime = req.query.max;focus = req.query.focus === '1';
+	 query={};
+	 if(max_datetime) {
+	     query.create_at = {$lt: new Date(max_datetime)};
+	 }
+	 // 先获取回答，然后加载用户数据
+	  Answer.find(query, {}, {limit: 20, sort: [['create_at', 'desc']]}, function(err, answers) {
+	        if(err) { return callback(err); }
+	        var uids = [];
+	        for(var i = 0, len = answers.length; i < len; i++) {
+	            var answer = answers[i];
+	            uids.push(answer.author_id);
+	        }
+	        User.fetchByIds(uids, function(err, users) {
+	            if(!err) {
+	                for(var i = 0, len = answers.length; i < len; i++) {
+	                    var answer = answers[i];
+	                    answer.user = users[answers.author_id];
+	                }
+	            }
+	            callback(err, answers);
+	        });
+	   }); 
+	
+}
+
+/*
+ * 获取用户回答的问题
+ */
+exports.answers_of_mine =function(req,res,next) {
+	 var max_datetime = req.query.max;focus = req.query.focus === '1';
+	 query={};
+	 if(max_datetime) {
+	     query.create_at = {$lt: new Date(max_datetime)};
+	 }
+	 if(req.session.user_id && req.params.user_id) {
+		 query.author_id=req.params.user_id;
+		 exports.load(req.params.user_id,function(err, users){
+			 if(err) {return next(err);}
+			 get_focus_qids(req, function(err, map_qids) {
+			        if(err) { return next(err); }
+			        find_answers(req,query,function(err,answers) {
+			          if(err) { return next(err); }
+			          query={};
+			          ans_qids=[];
+			          for(var j=0;j<answers.length;j++) {
+			        	  ans_qids.push(answers[j].question_id);
+			          }
+			          query._id = {'$in': ans_qids};
+					  find_questions(req, query, function(err, questions) {
+					     if(err) { return next(err); }
+					     ques_ans=[];
+					     for(var i = 0, len = questions.length; i < len; i++) {
+				                var question = questions[i];
+				                if(map_qids[question.id]) {
+				                    question.focus = true;
+				                }
+				          }
+					     for(var k=0;k<answers.length;k++) {
+					    	 var answer = answers[k];
+					    	 for(var m=0;m<questions.length;m++) {
+					    		if(answer.question_id=questions[m]._id) 
+					    			questions[m].ans_content=answer.content;
+					    			ques_ans.push(questions[m]);
+					    	 }
+					     }
+					     
+					         if(req.xhr) {
+					        	 res.partial('question/question', ques_ans);
+					         } else {
+					              res.render('question/list', {questions: ques_ans,focus: focus,user: users, user_ans:true});
+					         }
+					    });
+			        });
+			 });
+		 });
+	 }
 };

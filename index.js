@@ -122,6 +122,8 @@ app.post('/user/:user_id/follow', user_control.follow);
 app.post('/user/:user_id/unfollow', user_control.unfollow);
 app.get('/user/:user_id/followers', user_control.followers);
 app.get('/user/:user_id/following', user_control.following);
+app.get('/user/:user_id/questions', user_control.questions_of_mine);
+app.get('/user/:user_id/answers', user_control.answers_of_mine);
 
 app.resource('user', user_control);
 app.get('/api/sync_user', user_control.sync_user);

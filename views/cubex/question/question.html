@@ -4,7 +4,11 @@
     </h2>
     <p class="item_info">
         <a href="<%- base %>/user/<%- question.user.id %>"><%= question.user.name %></a>
+		<% if(question.ans_content==null) { %>
         <%=: 'question' | action_name %>
+		<% }else{ %>
+		回答了该问题
+		<% } %>
         &bull;
         <%- question.anser_count || 0 %> 个答案
         &bull;
@@ -17,5 +21,8 @@
         &bull;
         <% } %>
         <span class="datetime"><%- question.create_at.format() %></span>
+		<% if(question.ans_content!=null) { %>
+		<div class="item_content"> <%= question.ans_content %> </div>
+		<% } %>
     </p>
 </div>

@@ -1,7 +1,7 @@
 /**
  * Module dependencies.
  */
-
+require.paths.push('modules');
 require('./public/js/lang');
 
 var express = require('express')

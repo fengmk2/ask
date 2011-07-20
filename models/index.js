@@ -111,7 +111,7 @@ require('./answer');
 require('./relation');
 require('./focus');
 
-mongoose.connect('mongodb://localhost/ask', function(err) {
+mongoose.connect('mongodb://127.0.0.1/ask', function(err) {
     if(err) {
         console.error('connect to db error: ' + err.message);
         process.exit(1);

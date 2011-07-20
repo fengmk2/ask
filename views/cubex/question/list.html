@@ -2,6 +2,15 @@
 <h2>我关注的问题</h2>
 <% } %>
 
+<% if(locals.user_ask) { %>
+<h2><%= user.name %>提出的问题</h2>
+<% } %>
+
+<% if(locals.user_ans) { %>
+<h2><%= user.name %>回答的问题</h2>
+<% } %>
+
+
 <% if(locals.category) { %>
 <h2><%= category.name %> <span class="item_info">共有 <%- category.question_count %> 个问题</span></h2>
 <% } %>
