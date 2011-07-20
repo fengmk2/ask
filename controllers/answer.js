@@ -35,6 +35,9 @@ exports.create = function(req, res, next) {
 	var user_reader = User.fetchById(user._id);
 	answer.author_id = user._id;
 	answer.question_id = question.id;
+    if(answer.content) {
+        answer.content = answer.content.only_text();
+    }
 	answer.save(function(err) {
 		if(!err) {
 			// 增加评论统计
@@ -69,6 +72,9 @@ exports.save = function(req, res, next){
 	var answer = req.answer;
 	var user = req.session.user;
 	answer.content = req.body.content;
+	if(answer.content) {
+        answer.content = answer.content.only_text();
+    }
 	answer.author_id = user._id;
 	answer.save(function(err) {
 		res.send(common.json_data_response(err, answer));

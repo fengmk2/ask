@@ -10,8 +10,9 @@ var express = require('express')
 
 var app = express.createServer();
 
-app.use('/ask', ask_app);
+var url_pre = config.url_pre || '/';
+app.use(url_pre, ask_app);
 
 app.listen(config.port);
-console.log('http://localhost:' + config.port);
+console.log('http://localhost:' + config.port + url_pre);
 console.log((process.env.NODE_ENV || 'development') + ' env');

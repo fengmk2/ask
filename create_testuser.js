@@ -13,5 +13,5 @@ var userdb = qs.encode({username: user.username, password: utils.md5(user.uid), 
 userdb = utils.strcode(userdb, user_agent, config.session_secret);
 var verify = utils.md5(userdb + config.session_secret);
 var args = qs.encode({userdb: userdb, verify: verify});
-var sync_user_url = 'http://localhost:9888/ask/api/sync_user?' + args;
+var sync_user_url = 'http://localhost:' + config.port + config.url_pre + '/api/sync_user?' + args;
 console.log(sync_user_url);

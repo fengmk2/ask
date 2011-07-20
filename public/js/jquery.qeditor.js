@@ -76,7 +76,8 @@ var QEditor = {
         	obj.after(hidden_flag);
         } else {
         	var preview_editor = $('<div class="qeditor_preview" contentEditable="true"></div>');
-	        preview_editor.html(obj.val());
+        	//console.log(obj.val());
+	        preview_editor.html(obj.html());
 	        obj.after(preview_editor);
 	        preview_editor.change(function(){
 	            var $this = $(this);

@@ -41,18 +41,16 @@ ul {
 	background:url(images/top_bg.gif) repeat-x  50% top;
 }
 #head{
-	width:950px;
+	width:1000px;
 	height:72px;
 	margin:0 auto;
 	position:relative;
 }
 .logo_ask{
-	background:url(images/logo_ask.gif) no-repeat;
-	width:177px;
+	background:url(images/logo_ask.jpg) no-repeat;
+	width:230px;
 	height:72px;
 	float:left;
-	margin-left:0;
-	margin-right:10px;
 }
 .search{
 	float:left;
@@ -146,7 +144,7 @@ a.go_ask_help{
 #main_right{
 	float:right;
 	margin:25px 10px 10px 10px;
-	width:200px;
+	width:210px;
 }
 #main_center{
     float:left;
@@ -157,18 +155,6 @@ a.go_ask_help{
     float:left;
     width:620px;
     margin:10px;
-}
-.pro_login, .std_login{
-	display:block;
-	width:171px;
-	height:34px;
-}
-.pro_login{
-	background:url(images/pro_login.gif) no-repeat;
-	margin-bottom:15px;
-}
-.std_login{
-	background:url(images/std_login.gif) no-repeat;
 }
 
 #footer {

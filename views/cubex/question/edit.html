@@ -19,7 +19,7 @@
         </p>
         <p><label for="question_content">可选: 更多问题描述</label></p>
         <p>
-            <textarea id="question_content" name="content" rows="30" class="long" tip="一句话无法表达清楚？都在这里说吧"><%= question.content || '' %></textarea>
+            <textarea id="question_content" name="content" rows="10" class="long" tip="一句话无法表达清楚？都在这里说吧"><%- question.content || '' %></textarea>
         </p>
         <p class="text_right">
             <% if(locals.current_user) {%>
@@ -44,9 +44,7 @@ function select_category(id, name) {
 
 $(document).ready(function(){
     $("textarea").qeditor();
-    
     $('#question_form input[tip], #question_form textarea[tip]').tooltip({onsubmit: true});
-    
     $('#btn_delete_question').click(function() {
         if(!window.confirm('真的要删除此问题吗？')) return;
         var url = window.location.pathname.replace('/edit', '/delete');

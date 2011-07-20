@@ -87,7 +87,7 @@ $(document).ready(function(){
         var $content = $btn.prev('.item_content');
         $content.hide();
         $btn.hide();
-        var $wrap = $btn.next('.editor_wrap');
+        var $wrap = $btn.nextAll('.editor_wrap');
         $wrap.find('.qeditor_preview').html($content.html()).change();
         $wrap.show();
     });

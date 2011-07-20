@@ -1,4 +1,5 @@
 
+exports.url_pre = '/club';
 exports.session_secret = 'vweorulx123dfwlfjlsjdf@!#!lasAWDOfjnjxjclvjlsdfjoasdufowefjljdf';
 exports.auth_cookie_name = 'cubex_auth';
 exports.pro_login_url = '../../suqian/webui/p/login?rd=/ask';

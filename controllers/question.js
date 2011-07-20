@@ -223,9 +223,8 @@ exports.create = function(req, res, next) {
 	var title = req.body.title
 	  , category_id = req.body.category_id
 	  , content = req.body.content
-	  , question = new Question({title: title, content: content})
+	  , question = new Question({title: title.only_text(), content: content.only_text()})
 	  , category_reader = null;
-	
 	if(category_id) {
 		question.category_id = category_id;
 		category_reader = Category.fetchById(category_id);
@@ -277,6 +276,10 @@ exports.save = function(req, res, next) {
 	}
 	question.category_id = category_id || null;
 	question.author_id = user._id;
+	question.title = question.title.only_text();
+    if(question.content) {
+        question.content = question.content.only_text();
+    }
 	question.save(function(err) {
 		if(err) return next(err);
 		if(old_category_reader) {

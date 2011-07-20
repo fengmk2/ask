@@ -45,3 +45,16 @@ if(!String.prototype.endswith) {
 String.prototype.remove_html_tag = function() {
     return this.replace(/(<.*?>|&nbsp;|\s)/ig, '');
 };
+
+String.prototype.remove_script = function() {
+    return this.replace(/<.*?script.*?>/ig, '');
+};
+
+/**
+ * 只保留文本和换行，其他都删除
+ */
+String.prototype.only_text = function() {
+    return this.replace(/(<\/(p|div)>|<br\s*\/?>)/ig, '\n')
+        .replace(/(<.*?>|&nbsp;|\r\t)/ig, '')
+        .replace(/\n/g, '<br/>');
+};
