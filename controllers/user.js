@@ -432,7 +432,6 @@ exports.questions_of_mine =function(req,res,next) {
 
 function find_answers(req, query, callback) {
 	 var max_datetime = req.query.max;focus = req.query.focus === '1';
-	 query={};
 	 if(max_datetime) {
 	     query.create_at = {$lt: new Date(max_datetime)};
 	 }
@@ -456,6 +455,8 @@ function find_answers(req, query, callback) {
 	   }); 
 	
 }
+
+
 
 /*
  * 获取用户回答的问题
@@ -492,9 +493,19 @@ exports.answers_of_mine =function(req,res,next) {
 					     for(var k=0;k<answers.length;k++) {
 					    	 var answer = answers[k];
 					    	 for(var m=0;m<questions.length;m++) {
-					    		if(answer.question_id=questions[m]._id) 
-					    			questions[m].ans_content=answer.content;
-					    			ques_ans.push(questions[m]);
+					    		if((answer.question_id.toString())==(questions[m]._id.toString())) {
+					    			answer.ans_content=answer.content;
+					    			answer.answer_count=questions[m].answer_count;
+					    			if(map_qids[questions[m]._id.id]) {
+					                    answer.focus = true;
+					                }
+					    			answer.id=questions[m]._id.toString();
+					    			answer.user={};
+					    			answer.user.id=answer.author_id;
+					    			answer.user.name=users.name;
+					    			answer.title=questions[m].title;
+					    			ques_ans.push(answer);
+					    		}
 					    	 }
 					     }
 					     

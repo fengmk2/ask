@@ -8,5 +8,5 @@ exports.port = 9888;
 exports.admins = {'淘宝数据魔方': true};
 exports.show_log_user_id = '4e255b4435a5f22c4200000e'; // 默认显示的log的id
 
-exports.session_db = 'mongodb://localhost/ask_session';
-exports.db = 'mongodb://localhost/ask';
+exports.session_db = 'mongodb://127.0.0.1/ask_session';
+exports.db = 'mongodb://127.0.0.1/ask';

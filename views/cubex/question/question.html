@@ -1,6 +1,10 @@
 <div class="item">
     <h2>
+	<% if(question.ans_content==null) { %>
     <a title="<%= question.title%>" href="<%- base %>/question/<%- question.id %>"><%=: question.title | fixed_string:150 %></a>
+	<% }else{ %>
+	<a title="<%= question.title%>" href="<%- base %>/question/<%- question.question_id %>"><%=: question.title | fixed_string:150 %></a>
+	<% } %>
     </h2>
     <p class="item_info">
         <a href="<%- base %>/user/<%- question.user.id %>"><%= question.user.name %></a>

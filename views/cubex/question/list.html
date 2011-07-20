@@ -3,10 +3,12 @@
 <% } %>
 
 <% if(locals.user_ask) { %>
+<%- partial('user/header') %>
 <h2><%= user.name %>提出的问题</h2>
 <% } %>
 
 <% if(locals.user_ans) { %>
+<%- partial('user/header') %>
 <h2><%= user.name %>回答的问题</h2>
 <% } %>
 
