@@ -2,7 +2,7 @@
 
 ## Install
 
-    $ sudo npm install -g express mongoose ejs express-resource node-dev
+    $ sudo npm install -g express mongoose ejs express-resource node-dev connect-mongo
     
 ### mongodb 
     

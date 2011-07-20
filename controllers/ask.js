@@ -4,6 +4,7 @@
 
 var models = require('../models')
   , common = require('./common')
+  , config = require('../config')
   , Log = models.Log
   , Question = models.Question
   , Relation = models.Relation
@@ -24,7 +25,7 @@ exports.index = function(req, res, next) {
         if(err) {
             return next(err);
         }
-        var ids = [];
+        var ids = [config.show_log_user_id];
         if(req.session.user_id) {
             ids.push(req.session.user_id);
         }
@@ -100,4 +101,13 @@ var get_logs = exports.get_logs = function(query, callback) {
             });
         });
     });
+};
+
+exports.monitor = function(req, res) {
+    var usage = process.memoryUsage();
+    var html = '';
+    for(var k in usage) {
+        html += k + ': ' + (usage[k] / 1024 / 1024) + 'MB <br/>';
+    }
+    res.send(html);
 };

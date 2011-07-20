@@ -3,7 +3,8 @@
  */
 
 var mongoose = require('mongoose')
-  , future = require('../lib/future').future;
+  , future = require('../lib/future').future
+  , config = require('../config');
 
 /**
  * Finds by id, when id is null or empty string, will callback(null, null)
@@ -111,7 +112,7 @@ require('./answer');
 require('./relation');
 require('./focus');
 
-mongoose.connect('mongodb://127.0.0.1/ask', function(err) {
+mongoose.connect(config.db, function(err) {
     if(err) {
         console.error('connect to db error: ' + err.message);
         process.exit(1);

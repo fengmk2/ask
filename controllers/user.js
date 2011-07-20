@@ -34,13 +34,13 @@ exports.sync_user = function(req, res, next) {
 	var userdb = req.body ? req.body.userdb : req.query.userdb;
 	var verify = req.body ? req.body.verify : req.query.verify;
 	if(utils.md5(userdb + config.session_secret) != verify) {
-	    return res.send(common.json_data_response({message: 'verify error, userdb: ' + userdb}));
+	    return res.send(common.json_data_response({message: 'verify error'}, userdb));
 	}
 	var user_agent = req.headers['user-agent'];
 	userdb = utils.strcode(userdb, user_agent, config.session_secret, true);
 	userdb = querystring.decode(userdb);
 	if(!userdb.uid) {
-	    return res.send(common.json_data_response({message: 'userdb error, userdb: ' + userdb}));
+	    return res.send(common.json_data_response({message: 'userdb error'}, userdb));
 	}
 	User.findOne({uid: userdb.uid}, function(err, user) {
 		if(err) return next(err);
@@ -202,6 +202,7 @@ exports.show = function(req, res, next) {
     }
     var event = new EventProxy();
     event.assign('relation', 'follower_counts', 'logs', function(relation, follower_counts, logs) {
+        //event.removeAllListeners();
         if(req.xhr) {
             res.partial('log', logs);
         } else {

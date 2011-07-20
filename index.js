@@ -8,6 +8,7 @@ var express = require('express')
   , Resource = require('express-resource')
   , csrf = require('./lib/csrf')
   , config = require('./config')
+  , MongoStore = require('connect-mongo')
   , models = require('./models');
 
 Resource.prototype._mapDefaultAction = Resource.prototype.mapDefaultAction;
@@ -39,7 +40,8 @@ app.dynamicLocals({
         // however if you run the mounting example
         // it adjusts to /blog/post/add
         return '/' == this.route ? '' : this.route;
-    }
+    },
+    csrf: csrf.token
 }).locals({
 	pro_login_url: config.pro_login_url,
 	std_login_url: config.std_login_url
@@ -86,15 +88,16 @@ app.configure(function() {
     app.use(express.cookieParser());
     app.use(express.session({
     	secret: config.session_secret
-      //, store: store
+      , store: MongoStore({db: config.session_db})
     }));
     app.use(user_control.user_middleware);
-    //app.use(csrf.check());
+    app.use(csrf.check());
 });
 
 // ask control
 var ask_control = require('./controllers/ask');
 app.resource(ask_control);
+app.get('/_monitor', ask_control.monitor);
 
 // category control
 var category_control = require('./controllers/category');

@@ -36,11 +36,11 @@
 <div class="section">
     <h2>随便看看</h2>
     <ul>
-        <li><a href="<%- base %>/">正在发生</a></li>
-        <li><a href="<%- base %>/question">所有问题</a></li>
         <% if(locals.current_user) { %> 
+        <li><a href="<%- base %>/">正在发生</a></li>
         <li><a href="<%- base %>/question?focus=1">我关注的问题</a></li>
         <% } %>
+        <li><a href="<%- base %>/question">所有问题</a></li>
     </ul>
 </div>
 <div class="section">
@@ -58,6 +58,7 @@
     <ul>
         <li><a class="pro_login" href="<%- pro_login_url %>" title="登录专业版数据魔方"></a></li>
         <li><a class="std_login" href="<%- std_login_url %>" title="登录标准版数据魔方"></a></li>
+        <li><a href="http://data.taobao.com/">数据魔方</a></li>
     </ul>
     <% } %>
     
