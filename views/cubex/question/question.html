@@ -26,7 +26,7 @@
         <% } %>
         <span class="datetime"><%- question.create_at.format() %></span>
 		<% if(question.ans_content!=null) { %>
-		<div class="item_content"> <%= question.ans_content %> </div>
+		<div class="item_content"> <%=: question.ans_content.remove_html_tag() | fixed_string:150 %></div>
 		<% } %>
     </p>
 </div>
